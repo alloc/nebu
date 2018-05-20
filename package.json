@@ -1,0 +1,22 @@
+{
+  "name": "nebu",
+  "version": "0.0.0",
+  "description": "Transform your acorns",
+  "license": "MIT",
+  "main": "js/index",
+  "scripts": {
+    "build": "coffee-build src -o js",
+    "prepublishOnly": "prepv -i || true"
+  },
+  "dependencies": {
+    "acorn": "^5.5.3",
+    "magic-string": "^0.24.0"
+  },
+  "devDependencies": {
+    "wch-coffee": "^0.2.0"
+  },
+  "repository": "https://github.com/aleclarson/nebu.git",
+  "engines": {
+    "node": ">= 7.6.0"
+  }
+}
