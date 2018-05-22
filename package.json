@@ -1,6 +1,6 @@
 {
   "name": "nebu",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transform your acorns",
   "license": "MIT",
   "main": "js/index",
