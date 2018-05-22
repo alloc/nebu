@@ -9,7 +9,7 @@ util = require 'util'
 global.inspect = (obj) ->
   console.log util.inspect obj, false, 5, true
 
-tp.group 'node.update:', ->
+tp.group 'node.set:', ->
 
   # replace a single node from its parent
   tp.test 'node child', (t) ->
@@ -18,7 +18,7 @@ tp.group 'node.update:', ->
 
       # `id` is an `Identifier` node
       VariableDeclarator: (node) ->
-        node.update 'id', 'b'
+        node.set 'id', 'b'
 
     t.eq output, 'let b = 1'
 
@@ -31,7 +31,7 @@ tp.group 'node.update:', ->
 
         # `elements` is an array of `Identifier` nodes
         ArrayPattern: (node) ->
-          node.update 'elements', 'c, d'
+          node.set 'elements', 'c, d'
 
       t.eq output, 'let [c, d] = [1, 2]'
 
@@ -40,7 +40,7 @@ tp.group 'node.update:', ->
       output = process input,
 
         ArrayExpression: (node) ->
-          node.update 'elements', '1, 2'
+          node.set 'elements', '1, 2'
 
       t.eq output, 'let a = [1, 2]'
 
@@ -54,7 +54,7 @@ tp.group 'node.update:', ->
       output = process input,
 
         ArrayExpression: (node) ->
-          node.update 'elements', ''
+          node.set 'elements', ''
 
       # We *could* strip the newline from emptied arrays,
       # but it's not a big priority right now.
@@ -71,8 +71,7 @@ tp.group 'node.update:', ->
     output = process input,
 
       TryStatement: (node) ->
-        debugger
-        node.update 'block', '''
+        node.set 'block', '''
           if (a()) {
             return b()
           }

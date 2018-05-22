@@ -80,7 +80,7 @@ Call the `iter` function for each child node that exists at the given property n
 
 Call the `resume` function after all children have been traversed. No arguments are passed. This method may be called multiple times, and by any other node.
 
-### update(prop, code)
+### set(prop, code)
 
 Update some property of the node.
 

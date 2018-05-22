@@ -52,7 +52,7 @@ exports.create = (output, walker) ->
     else @yields = [resume]
     return this
 
-  update: (prop, code) ->
+  set: (prop, code) ->
     if !val = @[prop]
       return this
 
