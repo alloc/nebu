@@ -1,0 +1,7 @@
+{
+  "name": "nebu-examples",
+  "dependencies": {
+    "changed-lines": "^1.0.0",
+    "nebu": "file:.."
+  }
+}
