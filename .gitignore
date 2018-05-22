@@ -1,2 +1,7 @@
 node_modules/
 js/
+!/js/
+/src/
+/spec/
+/examples/
+/test.js
