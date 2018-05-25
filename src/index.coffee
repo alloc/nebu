@@ -7,6 +7,8 @@ acorn = require 'acorn'
 
 nebu = exports
 
+nebu.parse = acorn.parse
+
 nebu.process = (input, opts) ->
 
   if !opts.plugins or !opts.plugins.length
