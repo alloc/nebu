@@ -38,8 +38,7 @@ The `process` function has the following options:
 - `plugins: object[]` array of visitor maps
 - `filename: ?string` path to the source code
 - `sourceMaps: ?string|true` sourcemap type
-- `sourceMapTarget: ?string` path to the sourcemap
-- `sourceRoot: ?string` sourcemap working directory
+- `generatedFile: ?string` path to the generated code
 - `parser: ?object` options for the parser
 
 The `plugins` array is required, and must contain at least one plugin.
@@ -47,8 +46,6 @@ The `plugins` array is required, and must contain at least one plugin.
 The `state` object is useful when a plugin analyzes the structure of your code and needs to communicate this information back to you. Another use case is inter-visitor communication.
 
 The `sourceMaps` option defaults to falsy, which means no sourcemap is generated. Setting `sourceMaps` to `true` or `"both"` will generate a `SourceMap` object and return it as the `map` property of the result object. Setting `sourceMaps` to `"inline"` or `"both"` will append a `//# sourceMappingURL` comment to the generated code. When `sourceMaps` equals `"inline"` or falsy, the `process` function returns a string (the generated code) instead of an object.
-
-The `filename` and `sourceMapTarget` strings are recommended if you specify the `sourceMaps` option. You'll want to set the `sourceRoot` option if `filename` and `sourceMapTarget` are both relative paths. Setting `sourceMapTarget` does *not* write anything to disk.
 
 The `parser` options object is passed to `acorn.parse`, whose valid options are listed [here](https://github.com/acornjs/acorn#main-parser). The `ecmaVersion` option is always set to `9` (to stay compatible with Bublé). The `sourceType` option is always set to `"module"`.
 

@@ -48,9 +48,8 @@ nebu.process = (input, opts) ->
     js: output.toString()
     map: output.generateMap
       includeContent: true
-      sourceRoot: opts.sourceRoot
       source: opts.filename
-      file: opts.sourceMapTarget
+      file: opts.generatedFile
 
   mapURL =
     if opts.sourceMaps isnt true
