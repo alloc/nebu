@@ -1,4 +1,6 @@
 {greedyRange, indent, noop, parseDepth, stripIndent} = require './utils'
+MagicSlice = require './slice'
+Walker = require './walker'
 acorn = require 'acorn'
 
 AcornMixin = exports
@@ -8,6 +10,15 @@ isLiteral = (type) ->
   if @type is 'Literal'
     !type or typeof @value is type
   else false
+
+# Process any node with other plugins.
+process = (node, source, state, plugins) ->
+  slice = new MagicSlice source, node.start, node.end
+  walker = new Walker state, plugins
+  mixin = AcornMixin.apply slice, walker
+  walker.walk this
+  AcornMixin.remove mixin
+  return slice
 
 # Context-aware mixin for acorn Node objects
 createMixin = (output, walker) ->
@@ -31,6 +42,16 @@ createMixin = (output, walker) ->
 
   toString: ->
     stripIndent input.slice(@start, @end), tab
+
+  process: (state, plugins) ->
+    if arguments.length is 1
+      plugins = state; state = null
+
+    if !Array.isArray plugins
+      throw TypeError '`plugins` must be an array'
+
+    process this, output, state, plugins
+    return this
 
   walk: (prop, iter = noop) ->
     if !val = @[prop]

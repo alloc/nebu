@@ -69,6 +69,16 @@ Slice the source code using `node.start` and `node.end` as boundaries.
 
 NOTE: This does *not* include mutations, so the return value is static.
 
+### process(state, plugins)
+
+Process a node with a separate set of plugins.
+
+The `state` argument is optional. You may pass null or only the plugins array if your plugins are stateless.
+
+All changes are included in the result of `nebu.process`.
+
+The return value is the processed node.
+
 ### walk(prop, iter)
 
 Call the `iter` function for each child node that exists at the given property name. Before your function is called, the children have their `parent` and `ref` properties set accordingly. The `iter` argument is optional.
