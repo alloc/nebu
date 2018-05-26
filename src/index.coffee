@@ -10,9 +10,8 @@ nebu = exports
 nebu.parse = acorn.parse
 
 nebu.process = (input, opts) ->
-
-  if !opts.plugins or !opts.plugins.length
-    throw Error 'Must provide at least one plugin'
+  if !Array.isArray opts.plugins
+    throw Error 'The `plugins` option must be an array'
 
   # Fast plugin search by node type
   plugins = mergeVisitors opts.plugins
@@ -64,12 +63,15 @@ nebu.process = (input, opts) ->
   return res.js
 
 mergeVisitors = (plugins) ->
+  count = 0
   visitors = Object.create null
   for plugin in plugins
-    if !isObject plugin
-      throw Error 'Plugins must be objects'
-    for type, visitor of plugin
-      if arr = visitors[type]
-      then arr.push visitor
-      else visitors[type] = [visitor]
-  return visitors
+    if isObject plugin
+      for type, visitor of plugin
+        count += 1
+        if arr = visitors[type]
+        then arr.push visitor
+        else visitors[type] = [visitor]
+  if count is 0
+    throw Error 'No plugins provided a visitor'
+  visitors
