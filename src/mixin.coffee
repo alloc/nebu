@@ -13,12 +13,13 @@ isLiteral = (type) ->
 
 # Process any node with other plugins.
 process = (node, source, state, plugins) ->
-  slice = new MagicSlice source, node.start, node.end
-  walker = new Walker state, plugins
-  mixin = AcornMixin.apply slice, walker
-  walker.walk this
-  AcornMixin.remove mixin
-  return slice
+  if !node.stale
+    slice = new MagicSlice source, node.start, node.end
+    walker = new Walker state, plugins
+    mixin = AcornMixin.apply slice, walker
+    walker.walk this
+    AcornMixin.remove mixin
+  return
 
 # Context-aware mixin for acorn Node objects
 createMixin = (output, walker) ->
