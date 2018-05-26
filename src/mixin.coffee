@@ -1,6 +1,7 @@
 {greedyRange, indent, noop, parseDepth, stripIndent} = require './utils'
 acorn = require 'acorn'
 
+AcornMixin = exports
 pt = acorn.Node.prototype
 
 isLiteral = (type) ->
@@ -9,7 +10,7 @@ isLiteral = (type) ->
   else false
 
 # Context-aware mixin for acorn Node objects
-exports.create = (output, walker) ->
+createMixin = (output, walker) ->
   tab = output.indentStr or '  '
   input = output.original
 
@@ -184,15 +185,16 @@ exports.create = (output, walker) ->
 # mixin stack (for nested transforms)
 stack = []
 
-exports.apply = (mixin) ->
+AcornMixin.apply = (output, walker) ->
+  mixin = createMixin output, walker
   prev = {}
   for key of mixin
     prev[key] = pt[key]
     pt[key] = mixin[key]
   stack.push prev
-  return
+  return mixin
 
-exports.remove = (mixin) ->
+AcornMixin.remove = (mixin) ->
   prev = stack.pop()
   if prev
     for key of prev

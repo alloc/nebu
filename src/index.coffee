@@ -30,15 +30,11 @@ nebu.process = (input, opts) ->
   walker = new Walker opts.state, plugins
 
   # Temporarily extend Node.prototype
-  if !ast.nebu
-    mixin = AcornMixin.create output, walker
-    AcornMixin.apply mixin
+  mixin = AcornMixin.apply output, walker
 
   ast.depth = 0
   walker.walk ast
-
-  if mixin
-    AcornMixin.remove mixin
+  AcornMixin.remove mixin
 
   if !opts.sourceMaps
     return output.toString()
