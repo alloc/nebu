@@ -4,7 +4,19 @@ Walker = require './walker'
 acorn = require 'acorn'
 
 AcornMixin = exports
-pt = acorn.Node.prototype
+
+AcornMixin.init = (acorn, output, walker) ->
+  pt = acorn.Node.prototype
+  mixin = createMixin output, walker
+  for key of mixin
+    pt[key] = mixin[key]
+  return mixin
+
+AcornMixin.remove = (acorn, mixin) ->
+  pt = acorn.Node.prototype
+  for key of mixin
+    delete pt[key]
+  return
 
 isLiteral = (type) ->
   if @type is 'Literal'
@@ -203,28 +215,6 @@ createMixin = (output, walker) ->
       walker.drop val
 
     return this
-
-# mixin stack (for nested transforms)
-stack = []
-
-AcornMixin.apply = (output, walker) ->
-  mixin = createMixin output, walker
-  prev = {}
-  for key of mixin
-    prev[key] = pt[key]
-    pt[key] = mixin[key]
-  stack.push prev
-  return mixin
-
-AcornMixin.remove = (mixin) ->
-  prev = stack.pop()
-  if prev
-    for key of prev
-      pt[key] = prev[key]
-    return
-  for key of mixin
-    delete pt[key]
-  return
 
 getArray = (node, prop) ->
   if val = node[prop]

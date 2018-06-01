@@ -3,11 +3,12 @@ MagicString = require 'magic-string'
 AcornMixin = require './mixin'
 isObject = require 'is-object'
 Walker = require './walker'
-acorn = require 'acorn'
 
 nebu = exports
 
-nebu.parse = acorn.parse
+Object.defineProperty nebu, 'acorn',
+  writable: true
+  value: null
 
 nebu.process = (input, opts) ->
   if !Array.isArray opts.plugins
@@ -15,6 +16,10 @@ nebu.process = (input, opts) ->
 
   # Fast plugin search by node type
   plugins = mergeVisitors opts.plugins
+
+  # Ensure acorn is loaded.
+  if !acorn = nebu.acorn
+    nebu.acorn = acorn = require 'acorn'
 
   # Let caller pass their own AST
   ast = opts.ast or acorn.parse input, {
@@ -30,11 +35,11 @@ nebu.process = (input, opts) ->
   walker = new Walker opts.state, plugins
 
   # Temporarily extend Node.prototype
-  mixin = AcornMixin.apply output, walker
+  mixin = AcornMixin.init acorn, output, walker
 
   ast.depth = 0
   walker.walk ast
-  AcornMixin.remove mixin
+  AcornMixin.remove acorn, mixin
 
   if !opts.sourceMaps
     return output.toString()

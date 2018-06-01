@@ -49,6 +49,10 @@ The `sourceMaps` option defaults to falsy, which means no sourcemap is generated
 
 The `parser` options object is passed to `acorn.parse`, whose valid options are listed [here](https://github.com/acornjs/acorn#main-parser). The `ecmaVersion` option is always set to `9` (to stay compatible with Bublé). The `sourceType` option is always set to `"module"`.
 
+### nebu.acorn
+
+To override the `acorn` module that nebu uses, you can set `nebu.acorn` before calling `nebu.process` for the first time.
+
 ## Node API
 
 Every node (except the root node) has these properties:
