@@ -41,7 +41,7 @@ The `process` function has the following options:
 - `generatedFile: ?string` path to the generated code
 - `parser: ?object` options for the parser
 
-The `plugins` array is required, and must contain at least one plugin.
+The `plugins` array is required, and must contain at least one plugin. It may contain nested arrays of plugins.
 
 The `state` object is useful when a plugin analyzes the structure of your code and needs to communicate this information back to you. Another use case is inter-visitor communication.
 
