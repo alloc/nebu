@@ -1,4 +1,4 @@
-# nebu v1.1.0
+# nebu v1.1.1
 
 Transform your Javascript with [acorn][1] trees.
 
