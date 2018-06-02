@@ -15,7 +15,8 @@ nebu.process = (input, opts) ->
     throw Error 'The `plugins` option must be an array'
 
   # Fast plugin search by node type
-  plugins = mergeVisitors opts.plugins
+  if mergePlugins(plugins = {}, opts.plugins) is 0
+    throw Error 'No plugins provided a visitor'
 
   # Ensure acorn is loaded.
   if !acorn = nebu.acorn
@@ -63,16 +64,15 @@ nebu.process = (input, opts) ->
   return res if opts.sourceMaps isnt 'inline'
   return res.js
 
-mergeVisitors = (plugins) ->
+mergePlugins = (visitors, plugins) ->
   count = 0
-  visitors = Object.create null
   for plugin in plugins
-    if isObject plugin
+    if Array.isArray plugin
+      count += mergePlugins visitors, plugin
+    else if isObject plugin
       for type, visitor of plugin
         count += 1
         if arr = visitors[type]
         then arr.push visitor
         else visitors[type] = [visitor]
-  if count is 0
-    throw Error 'No plugins provided a visitor'
-  visitors
+  count
