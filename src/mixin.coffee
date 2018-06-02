@@ -3,17 +3,28 @@ MagicSlice = require './slice'
 Walker = require './walker'
 acorn = require 'acorn'
 
+stack = [] # for nested processing
+
 AcornMixin = exports
 
 AcornMixin.init = (acorn, output, walker) ->
   pt = acorn.Node.prototype
   mixin = createMixin output, walker
-  for key of mixin
-    pt[key] = mixin[key]
+  if pt.nebu
+    prev = {}
+    for key of mixin
+      prev[key] = pt[key]
+      pt[key] = mixin[key]
+    stack.push prev
+  else Object.assign pt, mixin
   return mixin
 
 AcornMixin.remove = (acorn, mixin) ->
   pt = acorn.Node.prototype
+  if prev = stack.pop()
+    for key of prev
+      pt[key] = prev[key]
+    return
   for key of mixin
     delete pt[key]
   return
