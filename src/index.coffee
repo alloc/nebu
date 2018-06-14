@@ -52,14 +52,15 @@ nebu.process = (input, opts) ->
       source: opts.filename
       includeContent: opts.includeContent isnt false
 
-  mapURL =
-    if opts.sourceMaps isnt true
-      res.map.toUrl()
-    else if opts.filename and opts.sourceMapTarget
-      relative dirname(opts.filename), opts.sourceMapTarget
+  if res.map
+    mapURL =
+      if opts.sourceMaps isnt true
+        res.map.toUrl()
+      else if opts.filename and opts.sourceMapTarget
+        relative dirname(opts.filename), opts.sourceMapTarget
 
-  if mapURL
-    res.js += '\n//# sourceMappingURL=' + mapURL
+    if mapURL
+      res.js += '\n//# sourceMappingURL=' + mapURL
 
   return res if opts.sourceMaps isnt 'inline'
   return res.js
