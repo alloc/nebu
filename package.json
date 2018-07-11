@@ -1,13 +1,17 @@
 {
   "name": "nebu",
   "version": "1.1.1",
-  "description": "Transform your acorns",
+  "main": "lib/index",
   "license": "MIT",
-  "main": "js/index",
+  "description": "Fast, extensible, and light Javascript transformer",
+  "repository": "https://github.com/aleclarson/nebu.git",
   "scripts": {
-    "build": "coffee-build src -o js",
-    "prepublishOnly": "prepv -i || true"
+    "build": "coffee-build src -o lib"
   },
+  "files": [
+    "lib/",
+    "utils.js"
+  ],
   "dependencies": {
     "acorn": "^5.5.3",
     "is-object": "^1.0.1",
@@ -16,9 +20,8 @@
   "devDependencies": {
     "coffeescript": "^2.3.0",
     "testpass": "^0.8.1",
-    "wch-coffee": "^0.2.0"
+    "wch-coffee": "*"
   },
-  "repository": "https://github.com/aleclarson/nebu.git",
   "engines": {
     "node": ">= 7.6.0"
   }

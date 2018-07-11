@@ -1,18 +1,17 @@
 # nebu v1.1.1
 
-Transform your Javascript with [acorn][1] trees.
+Fast, extensible, and light Javascript transformer. (pronounced `nee-boo`)
 
-Pronounced `nee-boo`.
+**Why bother?** Nebu saves developers from the slow and heavy [Babel][1] compiler. Nebu skips AST-to-code generation, preferring simple string mutations, while keeping sourcemap support. This improves performance, preserves coding style, and makes plugins less clunky.
 
-Nebu brings the power of [Babel][2]'s plugin pipeline and visitor design, but without a slow AST-to-code phase or clunky AST node constructors. Like Babel, we parse and traverse an AST to determine which changes are needed and where. Like [Bublé][3], we avoid generating your code from the AST, which improves performance and preserves the style of your code. And of course, sourcemaps are included!
+For ES6 support, use [Bublé][2] *after* using Nebu.
+
+If you believe in Nebu's mission, consider building a Nebu plugin. The ecosystem is practically non-existent. It needs your help! 🤓
 
 **This is still experimental! Please report bugs and contribute if you can!** 🙂
 
-NOTE: Nebu does *not* convert your ES6 code to ES5 (or anything like that). If you need that, use [Bublé][3] *after* you run your code through Nebu, or you can write code that runs on your target platforms without Bublé. 😉
-
-[1]: https://github.com/acornjs/acorn
-[2]: https://github.com/babel/babel
-[3]: https://github.com/Rich-Harris/buble
+[1]: https://github.com/babel/babel
+[2]: https://github.com/Rich-Harris/buble
 
 ```js
 const nebu = require('nebu');
