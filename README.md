@@ -1,4 +1,4 @@
-# nebu v1.1.1
+# nebu v1.2.0
 
 Fast, extensible, and light Javascript transformer. (pronounced `nee-boo`)
 
