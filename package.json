@@ -13,7 +13,7 @@
     "utils.js"
   ],
   "dependencies": {
-    "acorn": "^5.5.3",
+    "acorn": "^6.0.0",
     "is-object": "^1.0.1",
     "magic-string": "^0.24.0"
   },
