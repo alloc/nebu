@@ -18,8 +18,8 @@
     "magic-string": "^0.24.0"
   },
   "devDependencies": {
-    "coffeescript": "^2.3.0",
-    "testpass": "^0.8.1",
+    "coffeescript": "2.4.1",
+    "testpass": "0.8.3",
     "wch-coffee": "*"
   },
   "engines": {
