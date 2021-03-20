@@ -1,36 +1,37 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-import { props } from './props'
+import type { Lookup } from '@alloc/types'
+import type { PluginMap, Visitor } from './types'
+import { Node } from './Node'
+import { KEYS } from 'eslint-visitor-keys'
+import { is } from '@alloc/is'
 
-class Walker {
-  constructor(state, plugins) {
-    this.state = state || {}
-    this.plugins = plugins
-    this.stack = []
-    this.yielded = new Set()
-  }
+export class Walker<State = Lookup> {
+  stack: Node[] = []
+  yielded = new Set<any>()
+
+  constructor(
+    /** State shared between plugins */
+    readonly state: State,
+    /** Visitor plugins */
+    readonly plugins: PluginMap<State>
+  ) {}
 
   // Depth-first traversal, parents first
-  walk(node, parent, ref) {
-    let visitors
-    if (node.stale) {
+  walk(node: Node, parent?: Node, ref?: string) {
+    if (node.removed) {
       return
     }
 
     this.stack.push(node)
     if (parent) {
       node.parent = parent
-      node.ref = ref
+      node.ref = ref!
     }
 
-    if ((visitors = this.plugins[node.type])) {
-      for (let visitor of Array.from(visitors)) {
+    const visitors = this.plugins[node.type] as Visitor[]
+    if (visitors) {
+      for (const visitor of visitors) {
         visitor(node, this.state)
-        if (node.stale) {
+        if (node.removed) {
           return
         }
       }
@@ -39,7 +40,7 @@ class Walker {
     // Visit any children.
     this.descend(node)
 
-    if (!node.stale) {
+    if (!node.removed) {
       if (node.yields != null) {
         node.yields.forEach(resume => resume())
       }
@@ -49,26 +50,31 @@ class Walker {
   }
 
   // Traverse deeper.
-  descend(node) {
+  descend(node: Node) {
     let k = -1
-    const keys = props[node.type] || Object.keys(node)
+    const keys = KEYS[node.type]
+    if (!keys) {
+      throw Error(`Unknown node type: "${node.type}"`)
+    }
     while (++k !== keys.length) {
-      var key, val
-      if ((val = node[(key = keys[k])])) {
-        if (typeof val.type === 'string') {
-          if (val !== node.parent) {
-            this.walk(val, node, key)
-            if (node.stale) {
-              return
-            }
+      const key = keys[k]
+      const val: any = node[key as keyof Node]
+      if (!val) {
+        continue
+      }
+      if (Node.isNode(val)) {
+        if (val !== node.parent) {
+          this.walk(val, node, key)
+          if (node.removed) {
+            return
           }
-        } else if (Array.isArray(val)) {
-          let i = -1
-          while (++i !== val.length) {
-            this.walk(val[i], node, key)
-            if (node.stale) {
-              return
-            }
+        }
+      } else if (is.array(val)) {
+        let i = -1
+        while (++i !== val.length) {
+          this.walk(val[i], node, key)
+          if (node.removed) {
+            return
           }
         }
       }
@@ -76,23 +82,21 @@ class Walker {
   }
 
   // Prevent traversal of a node and its descendants.
-  drop(node) {
+  drop(node: Node) {
     const { stack } = this
 
     let i = stack.indexOf(node)
     if (i === -1) {
-      node.stale = true
+      node.removed = true
       return
     }
 
     const { length } = stack
     while (true) {
-      stack[i].stale = true
+      stack[i].removed = true
       if (++i === length) {
         return
       }
     }
   }
 }
-
-export { Walker }

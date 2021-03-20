@@ -1,17 +1,20 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+import { is } from '@alloc/is'
+import {
+  ArrayProp,
+  ESTree,
+  NodeProp,
+  PluginMap,
+  PluginOption,
+  Visitor,
+} from '../types'
+import type { Node } from '../Node'
 
-const matchType = type => node => node.type === type
+const matchType = (type: string) => (node: Node) => node.type === type
 
 export function noop() {}
 
 // Find a matching node. Check the given node first.
-export function lookup(node, match) {
+export function lookup(node: Node, match: string | ((node: Node) => boolean)) {
   if (typeof match === 'string') {
     match = matchType(match)
   }
@@ -19,17 +22,20 @@ export function lookup(node, match) {
     if (match(node)) {
       return node
     }
-    node = node.parent
+    node = node.parent!
   }
   return null
 }
 
 // Find a matching parent.
-export function findParent(node, match) {
+export function findParent(
+  node: Node,
+  match: string | ((node: Node) => boolean)
+) {
   if (typeof match === 'string') {
     match = matchType(match)
   }
-  while ((node = node.parent)) {
+  while ((node = node.parent!)) {
     if (match(node)) {
       return node
     }
@@ -38,27 +44,24 @@ export function findParent(node, match) {
 }
 
 // Is the given node first on its starting line?
-export function isFirst(node, input) {
+export function isFirst(node: Node, input: string) {
   const lineStart = 1 + input.lastIndexOf('\n', node.start)
   return /^[ \t]*$/.test(input.slice(lineStart, node.start))
 }
 
 // Compute tab count of a block.
-export function parseDepth(node, tab, input) {
+export function parseDepth(node: Node, tab: string, input: string) {
   const lineStart = 1 + input.lastIndexOf('\n', node.start)
   let lineEnd = input.indexOf('\n', lineStart)
   if (lineEnd === -1) {
     lineEnd = input.length
   }
-  const prefix = /^[ \t]*/.exec(input.slice(lineStart, lineEnd))[0]
+  const prefix = /^[ \t]*/.exec(input.slice(lineStart, lineEnd))![0]
   return prefix.length / tab.length
 }
 
 // Increment the indentation level.
-export function indent(code, tab, depth) {
-  if (depth == null) {
-    depth = 1
-  }
+export function indent(code: string, tab: string, depth = 1) {
   const indent = tab.repeat(depth)
 
   // Avoid extra work if using same tab string (or none).
@@ -82,13 +85,13 @@ export function indent(code, tab, depth) {
 // Reset the indentation level to zero.
 // Assume the first line is never indented.
 // This is useful when moving/duplicating code.
-export function stripIndent(code, tab) {
+export function stripIndent(code: string, tab: string) {
   let re = new RegExp(`^((?:${tab})*)`)
   const width = tab.length
   let depth = 0
   // Find the first indentation level that isn't zero.
   for (let line of code.split('\n')) {
-    depth = re.exec(line)[1].length / width
+    depth = re.exec(line)![1].length / width
     if (depth !== 0) {
       break
     }
@@ -106,7 +109,7 @@ export function stripIndent(code, tab) {
 }
 
 // Adapted from magic-string (https://goo.gl/pHi5kK)
-export function guessTab(code) {
+export function guessTab(code: string) {
   const lines = code.split('\n')
   const tabbed = lines.filter(line => /^\t+/.test(line))
   const spaced = lines.filter(line => /^ {2,}/.test(line))
@@ -122,7 +125,7 @@ export function guessTab(code) {
   // Guess the number of spaces per tab.
   return ' '.repeat(
     spaced.reduce(
-      (prev, cur) => Math.min(prev, /^ +/.exec(cur)[0].length),
+      (prev, cur) => Math.min(prev, /^ +/.exec(cur)![0].length),
       Infinity
     )
   )
@@ -131,10 +134,14 @@ export function guessTab(code) {
 // The node assumes ownership of its starting line, unless other nodes exist on
 // the same line. It also assumes ownership of the first trailing semicolon or
 // comma. Works with comma-delimited expressions, too.
-export function greedyRange(input, node, i) {
+export function greedyRange(
+  input: string,
+  node: Node,
+  i?: number
+): [number, number] {
   // Our minimum range.
   let sib, sibAfter, sibBefore
-  let { start, end } = node
+  let { start, end, parent, ref } = node
 
   // The trailing newline (or end of input).
   let lineEnd = input.indexOf('\n', end)
@@ -143,8 +150,9 @@ export function greedyRange(input, node, i) {
   }
 
   // Be sibling-aware.
-  let sibs = node.parent[node.ref]
+  let sibs: any = parent[ref as keyof Node]
   if (!Array.isArray(sibs)) {
+    i = 0
     sibs = null
   } else {
     if (i == null) {
@@ -200,9 +208,9 @@ export function greedyRange(input, node, i) {
     // whitespace in the same removal, unless no siblings exist on our line(s).
     if (sibBefore) {
       start = Math.max(sib.end, lineStart - 1)
-
-      // Take ownership of the leading newline if our parent doesn't start on it.
-    } else if (node.parent.start < lineStart) {
+    }
+    // Take ownership of the leading newline if our parent doesn't start on it.
+    else if (parent.start < lineStart) {
       start = lineStart - 1
     }
   }
@@ -212,7 +220,7 @@ export function greedyRange(input, node, i) {
     if (!sibAfter) {
       // Take ownership until the trailing newline
       // if our parent doesn't end on it.
-      if (node.parent.end > lineEnd) {
+      if (parent.end > lineEnd) {
         end = lineEnd
       }
 
@@ -223,4 +231,42 @@ export function greedyRange(input, node, i) {
   }
 
   return [start, end]
+}
+
+export function getArray<T extends ESTree.Node, P extends NodeProp<T>>(
+  node: Node<T>,
+  prop: P
+): ArrayProp<T, P>
+export function getArray(node: Node, prop: string): readonly any[]
+export function getArray(node: Node, prop: string) {
+  const val = Reflect.get(node, prop)
+  if (val) {
+    if (is.array(val)) {
+      return val
+    }
+    if (val.type == 'BlockStatement') {
+      return val.body
+    }
+  }
+  throw Error(`"${prop}" is not an array or BlockStatement`)
+}
+
+export function mergePlugins(plugins: readonly PluginOption[]): PluginMap {
+  const merged: any = {}
+  for (let plugin of plugins) {
+    if (plugin) {
+      if ('default' in plugin) {
+        plugin = plugin.default
+      }
+      for (const key in plugin) {
+        const visitor = (plugin as any)[key] as Visitor
+        if (merged[key]) {
+          merged[key].push(visitor)
+        } else {
+          merged[key] = [visitor]
+        }
+      }
+    }
+  }
+  return merged
 }
