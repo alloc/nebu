@@ -4,7 +4,7 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const { props } = require('./props')
+import { props } from './props'
 
 class Walker {
   constructor(state, plugins) {
@@ -95,4 +95,4 @@ class Walker {
   }
 }
 
-exports.Walker = Walker
+export { Walker }

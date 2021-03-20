@@ -5,14 +5,14 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const { relative, dirname } = require('path')
-const { MagicString } = require('magic-string')
-const { AcornMixin } = require('./mixin')
-const isObject = require('is-object')
-const { Walker } = require('./walker')
+import { relative, dirname } from 'path'
+import { MagicString } from 'magic-string'
+import { AcornMixin } from './mixin'
+import * as isObject from 'is-object'
+import { Walker } from './walker'
 
 const nebu = {}
-exports.nebu = nebu
+export { nebu }
 
 Object.defineProperty(nebu, 'acorn', {
   writable: true,

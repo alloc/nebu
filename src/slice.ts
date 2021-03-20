@@ -3,7 +3,7 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const MagicString = require('magic-string')
+import * as MagicString from 'magic-string'
 
 const def = Object.defineProperty
 const props = {
@@ -73,4 +73,4 @@ class MagicSlice {
   }
 }
 
-exports.MagicSlice = MagicSlice
+export { MagicSlice }

@@ -65,4 +65,4 @@ props.IfStatement = props.ConditionalExpression = [
   'alternate',
 ]
 
-exports.props = props
+export { props }

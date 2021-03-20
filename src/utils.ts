@@ -8,10 +8,10 @@
 
 const matchType = type => node => node.type === type
 
-exports.noop = function () {}
+export function noop() {}
 
 // Find a matching node. Check the given node first.
-exports.lookup = function (node, match) {
+export function lookup(node, match) {
   if (typeof match === 'string') {
     match = matchType(match)
   }
@@ -25,7 +25,7 @@ exports.lookup = function (node, match) {
 }
 
 // Find a matching parent.
-exports.findParent = function (node, match) {
+export function findParent(node, match) {
   if (typeof match === 'string') {
     match = matchType(match)
   }
@@ -38,13 +38,13 @@ exports.findParent = function (node, match) {
 }
 
 // Is the given node first on its starting line?
-exports.isFirst = function (node, input) {
+export function isFirst(node, input) {
   const lineStart = 1 + input.lastIndexOf('\n', node.start)
   return /^[ \t]*$/.test(input.slice(lineStart, node.start))
 }
 
 // Compute tab count of a block.
-exports.parseDepth = function (node, tab, input) {
+export function parseDepth(node, tab, input) {
   const lineStart = 1 + input.lastIndexOf('\n', node.start)
   let lineEnd = input.indexOf('\n', lineStart)
   if (lineEnd === -1) {
@@ -55,7 +55,7 @@ exports.parseDepth = function (node, tab, input) {
 }
 
 // Increment the indentation level.
-exports.indent = function (code, tab, depth) {
+export function indent(code, tab, depth) {
   if (depth == null) {
     depth = 1
   }
@@ -82,12 +82,12 @@ exports.indent = function (code, tab, depth) {
 // Reset the indentation level to zero.
 // Assume the first line is never indented.
 // This is useful when moving/duplicating code.
-exports.stripIndent = function (code, tab) {
+export function stripIndent(code, tab) {
   let re = new RegExp(`^((?:${tab})*)`)
   const width = tab.length
   let depth = 0
   // Find the first indentation level that isn't zero.
-  for (let line of Array.from(code.split('\n'))) {
+  for (let line of code.split('\n')) {
     depth = re.exec(line)[1].length / width
     if (depth !== 0) {
       break
@@ -106,8 +106,7 @@ exports.stripIndent = function (code, tab) {
 }
 
 // Adapted from magic-string (https://goo.gl/pHi5kK)
-exports.guessTab = guessTab
-function guessTab(code) {
+export function guessTab(code) {
   const lines = code.split('\n')
   const tabbed = lines.filter(line => /^\t+/.test(line))
   const spaced = lines.filter(line => /^ {2,}/.test(line))
@@ -132,7 +131,7 @@ function guessTab(code) {
 // The node assumes ownership of its starting line, unless other nodes exist on
 // the same line. It also assumes ownership of the first trailing semicolon or
 // comma. Works with comma-delimited expressions, too.
-exports.greedyRange = function (input, node, i) {
+export function greedyRange(input, node, i) {
   // Our minimum range.
   let sib, sibAfter, sibBefore
   let { start, end } = node

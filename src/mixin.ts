@@ -5,21 +5,15 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const {
-  greedyRange,
-  indent,
-  noop,
-  parseDepth,
-  stripIndent,
-} = require('./utils')
-const { MagicSlice } = require('./slice')
-const { Walker } = require('./walker')
-const acorn = require('acorn')
+import { greedyRange, indent, noop, parseDepth, stripIndent } from './utils'
+import { MagicSlice } from './slice'
+import { Walker } from './walker'
+import * as acorn from 'acorn'
 
 const stack = [] // for nested processing
 
 const AcornMixin = {}
-exports.AcornMixin = AcornMixin
+export { AcornMixin }
 
 AcornMixin.init = function (acorn, output, walker) {
   const pt = acorn.Node.prototype
