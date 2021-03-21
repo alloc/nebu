@@ -1,3 +1,11 @@
+export const Parameter = [
+  'ArrayPattern',
+  'AssignmentPattern',
+  'Identifier',
+  'ObjectPattern',
+  'RestElement',
+] as const
+
 export const ExportDeclaration = [
   'ClassDeclaration',
   'ClassExpression',

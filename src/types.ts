@@ -33,6 +33,7 @@ export interface NodeConstructor extends StaticTypeGuards {
   isIterationStatement(arg: any): arg is Node.IterationStatement
   isLeftHandSideExpression(arg: any): arg is Node.LeftHandSideExpression
   isLiteralExpression(arg: any): arg is Node.LiteralExpression
+  isParameter(arg: any): arg is Node.Parameter
   isPrimaryExpression(arg: any): arg is Node.PrimaryExpression
   isStatement(arg: any): arg is Node.Statement
 }
@@ -61,6 +62,7 @@ declare module './Node' {
     export interface LeftHandSideExpression
       extends Node<ESTree.LeftHandSideExpression> {}
     export interface LiteralExpression extends Node<ESTree.LiteralExpression> {}
+    export interface Parameter extends Node<ESTree.Parameter> {}
     export interface PrimaryExpression extends Node<ESTree.PrimaryExpression> {}
     export interface Statement extends Node<ESTree.Statement> {}
   }

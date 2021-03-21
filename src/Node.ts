@@ -16,6 +16,7 @@ import {
   IterationStatement,
   LeftHandSideExpression,
   LiteralExpression,
+  Parameter,
   PrimaryExpression,
   Statement,
 } from './composite'
@@ -308,6 +309,9 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
   isLiteralExpression() {
     return Node.isLiteralExpression(this)
   }
+  isParameter() {
+    return Node.isParameter(this)
+  }
   isPrimaryExpression() {
     return Node.isPrimaryExpression(this)
   }
@@ -335,6 +339,9 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
   }
   static isLiteralExpression(arg: any) {
     return Boolean(arg) && LiteralExpression.includes(arg.type)
+  }
+  static isParameter(arg: any) {
+    return Boolean(arg) && Parameter.includes(arg.type)
   }
   static isPrimaryExpression(arg: any) {
     return Boolean(arg) && PrimaryExpression.includes(arg.type)
