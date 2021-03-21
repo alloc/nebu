@@ -69,8 +69,8 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     return stripIndent(input.slice(this.start, this.end), tab)
   }
 
-  process(plugins: readonly Plugin[]): this
-  process<State>(state: State, plugins: readonly Plugin<State>[]): this
+  process(plugins: readonly Plugin[]): void
+  process<State>(state: State, plugins: readonly Plugin<State>[]): void
   process(state: any, plugins?: readonly Plugin[]) {
     if (is.array(state)) {
       plugins = state
@@ -87,7 +87,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       walker.walk(this)
       popContext()
     }
-    return this
   }
 
   walk<P extends NodeProp<T>>(
@@ -96,7 +95,7 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
   ) {
     const val: any = this[prop as keyof this]
     if (val == null) {
-      return this
+      return
     }
 
     if (is.array(val)) {
@@ -104,8 +103,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     } else if (val.type) {
       iter(val, 0)
     }
-
-    return this
   }
 
   yield(resume: () => void) {
@@ -114,13 +111,12 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     } else {
       this.yields = [resume]
     }
-    return this
   }
 
   set(prop: NodeProp<T>, code: string) {
     const val: any = this[prop as keyof this]
     if (val == null) {
-      return this
+      return
     }
 
     if (is.array(val)) {
@@ -136,8 +132,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       output.overwrite(val.start, val.end, code)
       walker.drop(val)
     }
-
-    return this
   }
 
   push(prop: NodeProp<T>, code: string) {
@@ -154,8 +148,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
         output.appendRight(node.start + 1, code)
       }
     }
-
-    return this
   }
 
   unshift(prop: NodeProp<T>, code: string) {
@@ -172,8 +164,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
         output.appendLeft(node.start + 1, code)
       }
     }
-
-    return this
   }
 
   splice(prop: NodeProp<T>, i: number, n: number, code: string) {
@@ -183,10 +173,8 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     if (i < 0) {
       i = (i % (len + 1)) + len
     } else if (i >= len) {
-      if (!code) {
-        return this
-      }
-      return this.push(prop, code)
+      if (code) this.push(prop, code)
+      return
     }
 
     const { input, output, tab, removeNodes } = getContext()
@@ -202,30 +190,26 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     if (code) {
       if (i !== 0) {
         output.appendLeft(arr[i - 1].end, code)
-        return this
+      } else {
+        if (Node.isBlockStatement(this)) {
+          this.depth ??= parseDepth(this, tab, input)
+          code = indent('\n' + code, tab, this.depth)
+        }
+        this.unshift(prop, code)
       }
-
-      if (Node.isBlockStatement(this)) {
-        this.depth ??= parseDepth(this, tab, input)
-        code = indent('\n' + code, tab, this.depth)
-      }
-      return this.unshift(prop, code)
     }
-    return this
   }
 
   before(code: string) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
     output.prependLeft(this.start, indent(code, tab, this.depth))
-    return this
   }
 
   after(code: string) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
     output.appendRight(this.end, indent(code, tab, this.depth))
-    return this
   }
 
   indent(depth = 1) {
@@ -240,7 +224,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       }
       output.appendLeft(i + 1, prefix)
     }
-    return this
   }
 
   dedent(depth = 1) {
@@ -248,7 +231,7 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     this.depth ??= parseDepth(this, tab, input)
     depth = Math.min(depth, this.depth)
     if (depth <= 0) {
-      return this
+      return
     }
     const [start, end] = Array.from(greedyRange(input, this))
     const width = tab.length * depth
@@ -260,31 +243,29 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       }
       output.remove(i, i + width)
     }
-    return this
   }
 
   replace(code: string) {
     const { output, walker } = getContext()
     output.overwrite(this.start, this.end, code)
     walker.drop(this)
-    return this
   }
 
   remove(prop?: NodeProp<T>) {
     if (this.removed) {
-      return this
+      return
     }
 
     const { input, output, walker, removeNodes } = getContext()
     if (!prop) {
       output.remove(...greedyRange(input, this))
       walker.drop(this)
-      return this
+      return
     }
 
     const val: any = this[prop as keyof this]
     if (val == null) {
-      return this
+      return
     }
 
     if (is.array(val)) {
@@ -295,8 +276,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       output.remove(val.start, val.end)
       walker.drop(val)
     }
-
-    return this
   }
 
   isLiteral(type?: string) {
