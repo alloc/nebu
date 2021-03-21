@@ -1,10 +1,14 @@
-# nebu v1.2.0
+# nebu
 
-Fast, extensible, and light Javascript transformer. (pronounced `nee-boo`)
+[![npm](https://img.shields.io/npm/v/nebu.svg)](https://www.npmjs.com/package/nebu)
+[![Code style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/alecdotbiz)
+
+Fast, extensible, statically typed, and light Javascript transformer. (pronounced `nee-boo`)
 
 **Why bother?** Nebu saves developers from the slow and heavy [Babel][1] compiler. Nebu skips AST-to-code generation, preferring simple string mutations, while keeping sourcemap support. This improves performance, preserves coding style, and makes plugins less clunky.
 
-For ES6 support, use [Bublé][2] *after* using Nebu.
+If you need to transpile ES6+ to ES5, use [Bublé][2] *after* using Nebu.
 
 If you believe in Nebu's mission, consider building a Nebu plugin. The ecosystem is practically non-existent. It needs your help! 🤓
 
@@ -12,6 +16,25 @@ If you believe in Nebu's mission, consider building a Nebu plugin. The ecosystem
 
 [1]: https://github.com/babel/babel
 [2]: https://github.com/Rich-Harris/buble
+
+&nbsp;
+
+## Examples
+
+See the `examples` folder for plugin examples.
+
+You can test these examples like so:
+
+```sh
+git clone https://github.com/alloc/nebu
+cd nebu && pnpm i
+cd examples && pnpm i
+./try nebu-strip-dev
+```
+
+&nbsp;
+
+## Usage
 
 ```js
 const nebu = require('nebu');
@@ -32,36 +55,37 @@ The `process` function traverses the AST depth-first, which means children are
 visited before neighbors, and parents are visited before children.
 
 The `process` function has the following options:
-- `ast: ?object` pre-existing ESTree object
-- `state: ?object` state passed to each visitor
+- `ast?: object` pre-existing ESTree object
+- `state?: object` state passed to each visitor
 - `plugins: object[]` array of visitor maps
-- `filename: ?string` path to the source code
-- `sourceMaps: ?string|true` sourcemap type
-- `generatedFile: ?string` path to the generated code
-- `includeContent: ?boolean` include source content in sourcemap
-- `parser: ?object` options for the parser
+- `filename?: string` path to the source code
+- `sourceMap?: boolean | "inline"` sourcemap type
+- `sourceMapTarget?: string` sourcemap path (relative to `filename`)
+- `generatedFile?: string` path to the generated code
+- `includeContent?: boolean` include source content in sourcemap
+- `jsx?: boolean` enable JSX parsing
 
-The `plugins` array is required, and must contain at least one plugin. It may contain nested arrays of plugins.
+The `plugins` array is required. Plugins are objects whose keys are ESTree node types and each value is a function that receives the node and shared state. The `plugins` array supports a plugin being wrapped in `{default: plugin}` for ESM interop.
 
 The `state` object is useful when a plugin analyzes the structure of your code and needs to communicate this information back to you. Another use case is inter-visitor communication.
 
-The `sourceMaps` option defaults to falsy, which means no sourcemap is generated. Setting `sourceMaps` to `true` or `"both"` will generate a `SourceMap` object and return it as the `map` property of the result object. Setting `sourceMaps` to `"inline"` or `"both"` will append a `//# sourceMappingURL` comment to the generated code. When `sourceMaps` equals `"inline"` or falsy, the `process` function returns a string (the generated code) instead of an object.
+The `sourceMap` option defaults to false, so no sourcemap is generated. Setting `sourceMap` to `true` will generate a `SourceMap` object and return it as the `map` property of the result object. Setting `sourceMap` to `"inline"` will append a `//# sourceMappingURL` comment to the generated code.
 
-The `includeContent` option defaults to true, which means you must explicitly specify `false` to exclude source content from the sourcemap.
+The `includeContent` option defaults to true. You must explicitly specify `false` to exclude source content from the sourcemap.
 
-The `parser` options object is passed to `acorn.parse`, whose valid options are listed [here](https://github.com/acornjs/acorn#main-parser). The `ecmaVersion` option is always set to `9` (to stay compatible with Bublé). The `sourceType` option is always set to `"module"`.
+### Utilities
 
-### nebu.acorn
+The `nebu/utils` module exports a few utility functions you may find useful when developing a plugin.
 
-To override the `acorn` module that nebu uses, you can set `nebu.acorn` before calling `nebu.process` for the first time.
+```js
+import { findParent } from 'nebu/utils'
+```
 
 ## Node API
 
 Every node (except the root node) has these properties:
 - `parent: Node` the nearest container node
 - `ref: string` the parent property that contains us
-
-The `acorn.Node` prototype is temporarily extended with the following methods.
 
 NOTE: Methods that take a `code` argument do *not* validate it for syntax errors. So be careful!
 
