@@ -1,2 +1,4 @@
-/node_modules/
-/lib/
+src/typeGuards.ts
+node_modules
+vendor
+dist

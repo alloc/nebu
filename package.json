@@ -1,26 +1,37 @@
 {
   "name": "nebu",
   "version": "1.2.0",
-  "main": "lib/index",
+  "main": "dist/nebu.js",
   "license": "MIT",
   "description": "Fast, extensible, and light Javascript transformer",
   "repository": "https://github.com/aleclarson/nebu.git",
+  "prettier": "@alloc/prettier-config",
   "scripts": {
-    "build": "coffee-build src -o lib"
+    "build": "node scripts/extractTypeGuards && tsc -p .",
+    "prepare": "yarn build"
   },
   "files": [
-    "lib/",
-    "utils.js"
+    "dist",
+    "utils",
+    "src"
   ],
   "dependencies": {
-    "acorn": "^5.5.3",
-    "is-object": "^1.0.1",
-    "magic-string": "^0.24.0"
+    "@alloc/is": "^3.0.0",
+    "@alloc/types": "^2.0.0",
+    "eslint-visitor-keys": "^2.0.0",
+    "magic-string": "~0.24.0",
+    "meriyah": "^4.1.5"
   },
   "devDependencies": {
-    "coffeescript": "^2.3.0",
-    "testpass": "^0.8.1",
-    "wch-coffee": "*"
+    "@alloc/prettier-config": "^1.0.0",
+    "@types/eslint-visitor-keys": "^1.0.0",
+    "@types/jest": "^26.0.21",
+    "@types/node": "^14.14.35",
+    "dedent": "^0.7.0",
+    "esbuild-jest": "npm:@alloc/esbuild-jest@^0.3.5",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.3"
   },
   "engines": {
     "node": ">= 7.6.0"
