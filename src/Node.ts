@@ -89,7 +89,7 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     }
   }
 
-  walk<P extends NodeProp<T>>(
+  walk<P extends NodeProp<T> & keyof T>(
     prop: P,
     iter: (node: Singular<NodeProps<T>[P]>, i: number) => void
   ): void

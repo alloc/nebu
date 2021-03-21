@@ -13,7 +13,7 @@ export type NodeProp<T extends ESTree.Node> = string &
     : never)
 
 export type NodeProps<T extends ESTree.Node> = {
-  [P in NodeProp<T>]: Nebufy<T[P]>
+  [P in NodeProp<T> & keyof T]: Nebufy<T[P]>
 }
 
 // Convert property into Nebu type.
@@ -128,7 +128,7 @@ export type Singular<T> = T extends ReadonlyArray<infer U>
 
 export type ArrayProp<
   T extends ESTree.Node,
-  P extends NodeProp<T>
+  P extends NodeProp<T> & keyof T
 > = ReadonlyArray<
   Nebufy<
     T[P] extends infer U

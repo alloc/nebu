@@ -233,10 +233,10 @@ export function greedyRange(
   return [start, end]
 }
 
-export function getArray<T extends ESTree.Node, P extends NodeProp<T>>(
-  node: Node<T>,
-  prop: P
-): ArrayProp<T, P>
+export function getArray<
+  T extends ESTree.Node,
+  P extends NodeProp<T> & keyof T
+>(node: Node<T>, prop: P): ArrayProp<T, P>
 export function getArray(node: Node, prop: string): readonly any[]
 export function getArray(node: Node, prop: string) {
   const val = Reflect.get(node, prop)
