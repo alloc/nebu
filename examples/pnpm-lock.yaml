@@ -1,0 +1,29 @@
+dependencies:
+  changed-lines: 1.0.0
+  nebu: link:..
+  typescript: link:../node_modules/typescript
+devDependencies:
+  kleur: 4.1.4
+lockfileVersion: 5.2
+packages:
+  /changed-lines/1.0.0:
+    dependencies:
+      diff-sequences: 22.4.3
+    dev: false
+    resolution:
+      integrity: sha512-lz1Jyw4/6BltfctUd8Ssrzcod9AYCkcaGqWFTPlEtK1kurntAdXVMZIiZwrI5VjFtE3n+qv/Ug6XC0ONFatmIQ==
+  /diff-sequences/22.4.3:
+    dev: false
+    resolution:
+      integrity: sha512-sMsQetU9mXqUEYpjCOavAKdEs0w1Qg9sbRlfVbaZUFnkJqm4iEQj0H4nocx8PMT+AnPKJW8C+xzU7LuO0s7c8Q==
+  /kleur/4.1.4:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
+specifiers:
+  changed-lines: ^1.0.0
+  kleur: ^4.1.4
+  nebu: link:..
+  typescript: link:../node_modules/typescript

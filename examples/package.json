@@ -2,6 +2,10 @@
   "name": "nebu-examples",
   "dependencies": {
     "changed-lines": "^1.0.0",
-    "nebu": "file:.."
+    "nebu": "link:..",
+    "typescript": "link:../node_modules/typescript"
+  },
+  "devDependencies": {
+    "kleur": "^4.1.4"
   }
 }

@@ -1,46 +1,44 @@
 #!/usr/bin/env node
-const nebu = require('nebu');
+const { nebu } = require('nebu')
 
-let plugin = process.argv[2];
+let plugin = process.argv[2]
 if (!plugin.startsWith('nebu-')) {
-  plugin = 'nebu-' + plugin;
+  plugin = 'nebu-' + plugin
 }
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-const script = path.resolve(plugin, 'script.js');
-const input = fs.readFileSync(script, 'utf8');
+const script = path.resolve(plugin, 'script.js')
+const input = fs.readFileSync(script, 'utf8')
 
 // For debugging:
-const util = require('util');
-global.inspect = function(obj) {
-  console.log(util.inspect(obj, false, 4, true) + '\n');
+const util = require('util')
+global.inspect = function (obj) {
+  console.log(util.inspect(obj, false, 4, true) + '\n')
 }
 
-const output = nebu.process(input, {
+const { js: output } = nebu.process(input, {
   filename: script,
-  plugins: [
-    require('./' + plugin)
-  ]
-});
+  plugins: [require('./' + plugin)],
+})
 
-const huey = require('huey');
+const k = require('kleur')
 
 // Print the diff before running.
 if (input !== output) {
-  const diff = require('changed-lines');
-  console.log(diff(input, output, huey).join('\n'));
+  const diff = require('changed-lines')
+  console.log(diff(input, output, k).join('\n'))
 } else {
-  console.log(huey.gray('No changes were made.'));
+  console.log(k.gray('No changes were made.'))
 }
 
-console.log('');
-console.log('Testing:', huey.yellow(plugin));
-console.log('');
+console.log('')
+console.log('Testing:', k.yellow(plugin))
+console.log('')
 
-const vm = require('vm');
+const vm = require('vm')
 vm.runInThisContext(output, {
   filename: script,
   displayErrors: true,
-});
+})
