@@ -20,7 +20,7 @@ type Nebufy<T> = T extends ESTree.Node
   : T
 
 export interface NodeConstructor extends StaticTypeGuards {
-  new <T extends ESTree.Node>(node: T): Node<T>
+  new <T extends ESTree.Node>(node: T, parent?: Node, ref?: string): Node<T>
 
   isNode(arg: any): arg is Node
   isDeclarationStatement(arg: any): arg is Node.DeclarationStatement

@@ -16,16 +16,12 @@ export class Walker<State = Lookup> {
   ) {}
 
   // Depth-first traversal, parents first
-  walk(node: Node, parent?: Node, ref?: string) {
+  walk(node: Node) {
     if (node.removed) {
       return
     }
 
     this.stack.push(node)
-    if (parent) {
-      node.parent = parent
-      node.ref = ref!
-    }
 
     const visitors = this.plugins[node.type] as Visitor[]
     if (visitors) {
@@ -62,17 +58,15 @@ export class Walker<State = Lookup> {
       if (!val) {
         continue
       }
-      if (Node.isNode(val)) {
-        if (val !== node.parent) {
-          this.walk(val, node, key)
-          if (node.removed) {
-            return
-          }
+      if (val.type) {
+        this.walk(val)
+        if (node.removed) {
+          return
         }
       } else if (is.array(val)) {
         let i = -1
         while (++i !== val.length) {
-          this.walk(val[i], node, key)
+          this.walk(val[i])
           if (node.removed) {
             return
           }

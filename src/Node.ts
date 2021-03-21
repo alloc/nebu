@@ -44,18 +44,20 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
   /** When true, this node will not exist in the output. */
   removed!: boolean
   /** The node that contains this node. */
-  parent!: Node
+  parent: Node
   /** The key on `parent` that references this node. */
-  ref!: string
+  ref: string
   /** @internal */
   yields?: (() => void)[]
   /** @internal */
   depth?: number
 
-  constructor(node: T) {
+  constructor(node: T, parent?: Node, ref?: string) {
     this.type = node.type
     this.start = node.start!
     this.end = node.end!
+    this.parent = parent!
+    this.ref = ref!
 
     Object.defineProperty(this, 'n', {
       value: node,
@@ -97,15 +99,9 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
       return this
     }
 
-    if (Array.isArray(val)) {
-      val.forEach((val, i) => {
-        val.parent = this
-        val.ref = prop
-        iter(val, i)
-      })
-    } else if (typeof val.type === 'string') {
-      val.parent = this
-      val.ref = prop
+    if (is.array(val)) {
+      val.forEach(iter)
+    } else if (val.type) {
       iter(val, 0)
     }
 
@@ -132,8 +128,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     }
 
     if (Node.isBlockStatement(val)) {
-      val.parent = this
-      val.ref = prop
       return val.splice('body', 0, Infinity, code)
     }
 
@@ -199,8 +193,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     if (n > 0) {
       const val: any = this[prop as keyof this]
       if (arr !== val) {
-        val.parent = this
-        val.ref = prop
         removeNodes(val.body, val, 'body', i, n)
       } else {
         removeNodes(val, this, prop, i, n)
@@ -298,8 +290,6 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     if (is.array(val)) {
       removeNodes(val, this, prop, 0, Infinity)
     } else if (val.type === 'BlockStatement') {
-      val.parent = this
-      val.ref = prop
       removeNodes(val.body, val, 'body', 0, Infinity)
     } else if (typeof val.type === 'string') {
       output.remove(val.start, val.end)

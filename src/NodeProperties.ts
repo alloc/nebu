@@ -5,13 +5,19 @@ import { Node } from './Node'
 
 export const NodeProperties = new Proxy(Object.prototype, {
   get(_, key: string, node) {
-    const val = node.n[key]
+    let val = node.n[key]
     if (val) {
       if (val.type) {
-        return replaceProp(node, key, new Node(val))
+        val = new Node(val, node, key)
+        return replaceProp(node, key, val)
       }
       if (is.array(val)) {
-        return replaceProp(node, key, val.map(wrapNode))
+        val = val.map(val => {
+          return val && val.type //
+            ? new Node(val, node, key)
+            : val
+        })
+        return replaceProp(node, key, val)
       }
     }
     return val
@@ -20,10 +26,6 @@ export const NodeProperties = new Proxy(Object.prototype, {
     return setProp.call(node, key, value)
   },
 })
-
-function wrapNode(val: any) {
-  return val && val.type ? new Node(val) : val
-}
 
 function setProp(this: any, key: string, newValue: any) {
   const replacer: any = replacers[key as AllNodeProps]
