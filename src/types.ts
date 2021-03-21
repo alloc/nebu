@@ -6,7 +6,11 @@ import type { Node } from './Node'
 export type { ESTree }
 
 export type NodeProp<T extends ESTree.Node> = string &
-  Exclude<keyof T, 'type' | keyof ESTree._Node>
+  (Exclude<keyof T, 'type' | keyof ESTree._Node> extends infer P
+    ? [P] extends [never]
+      ? unknown // coerce "never" to "unknown"
+      : P
+    : never)
 
 export type NodeProps<T extends ESTree.Node> = {
   [P in NodeProp<T>]: Nebufy<T[P]>
