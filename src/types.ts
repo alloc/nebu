@@ -17,11 +17,11 @@ export type NodeProps<T extends ESTree.Node> = {
 }
 
 // Convert property into Nebu type.
-type Nebufy<T> = T extends ESTree.Node
-  ? Node<T>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<Nebufy<U>>
-  : T
+type Nebufy<T, U = T> = U extends ESTree.Node
+  ? Node<Extract<T, ESTree.Node>>
+  : U extends ReadonlyArray<infer Element>
+  ? ReadonlyArray<Nebufy<Element>>
+  : U
 
 export interface NodeConstructor extends StaticTypeGuards {
   new <T extends ESTree.Node>(node: T, parent?: Node, ref?: string): Node<T>
