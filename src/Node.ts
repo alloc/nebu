@@ -91,9 +91,16 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
 
   walk<P extends NodeProp<T>>(
     prop: P,
-    iter: (node: Singular<NodeProps<T>[P]>, i: number) => void = noop
-  ) {
-    const val: any = this[prop as keyof this]
+    iter: (node: Singular<NodeProps<T>[P]>, i: number) => void
+  ): void
+
+  walk<P extends keyof this>(
+    prop: P,
+    iter: (node: Singular<this[P]>, i: number) => void
+  ): void
+
+  walk(prop: keyof this, iter: (node: any, i: number) => void = noop) {
+    const val: any = this[prop]
     if (val == null) {
       return
     }
