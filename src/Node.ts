@@ -212,16 +212,16 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     }
   }
 
-  before(code: string) {
+  before(code: string, index = this.start) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.prependLeft(this.start, indent(code, tab, this.depth))
+    output.prependLeft(index, indent(code, tab, this.depth))
   }
 
-  after(code: string) {
+  after(code: string, index = this.end) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.appendRight(this.end, indent(code, tab, this.depth))
+    output.appendRight(index, indent(code, tab, this.depth))
   }
 
   indent(depth = 1) {
