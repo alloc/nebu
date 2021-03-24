@@ -70,6 +70,10 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     return stripIndent(input.slice(this.start, this.end), tab)
   }
 
+  toJSON() {
+    return Reflect.get(this, 'n')
+  }
+
   process(plugins: readonly Plugin[]): void
   process<State>(state: State, plugins: readonly Plugin<State>[]): void
   process(state: any, plugins?: readonly Plugin[]) {
