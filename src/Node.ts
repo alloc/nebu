@@ -4,8 +4,10 @@ import { KEYS } from 'eslint-visitor-keys'
 import {
   ESTree,
   NodeConstructor,
+  ResolveNodeType,
   NodeProp,
   NodeProps,
+  NodeType,
   Plugin,
   Singular,
 } from './types'
@@ -21,6 +23,7 @@ import {
   Statement,
 } from './composite'
 import {
+  findParent,
   getArray,
   greedyRange,
   indent,
@@ -123,6 +126,12 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     } else {
       this.yields = [resume]
     }
+  }
+
+  findParent(match: (node: Node) => boolean): Node | null
+  findParent<T extends NodeType>(match: T): ResolveNodeType<T> | null
+  findParent(match: NodeType | ((node: Node) => boolean)) {
+    return findParent(this, match)
   }
 
   set(prop: NodeProp<T>, code: string) {

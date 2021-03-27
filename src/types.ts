@@ -102,13 +102,8 @@ export interface Visitor<T = any, State = Lookup> {
 }
 
 export type NodeType = ESTree.Node['type']
-export type NodeLookup = ObjectFromUnion<
-  ESTree.Node extends infer T
-    ? T extends { type: infer P }
-      ? { [K in string & P]: T }
-      : never
-    : never
->
+export type ResolveNodeType<T extends NodeType> = unknown &
+  TypeLookup[T & keyof TypeLookup]
 
 // All possible properties of a node.
 export type AllNodeProps = ESTree.Node extends infer T
