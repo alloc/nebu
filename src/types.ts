@@ -1,4 +1,4 @@
-import type { Lookup, ObjectFromUnion } from '@alloc/types'
+import type { Lookup } from '@alloc/types'
 import type { ESTree } from 'meriyah'
 import type { StaticTypeGuards, TypeGuards, TypeLookup } from './typeGuards'
 import type { Node } from './Node'
