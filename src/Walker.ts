@@ -66,7 +66,10 @@ export class Walker<State = Lookup> {
       } else if (is.array(val)) {
         let i = -1
         while (++i !== val.length) {
-          this.walk(val[i])
+          const elem = val[i]
+          if (elem) {
+            this.walk(elem)
+          }
           if (node.removed) {
             return
           }
