@@ -1,6 +1,6 @@
 {
   "name": "nebu",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/nebu.js",
   "license": "MIT",
   "description": "Fast, extensible, and light Javascript transformer",
