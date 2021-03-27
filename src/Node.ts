@@ -77,11 +77,12 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
     return Reflect.get(this, 'n')
   }
 
+  process(plugin: Plugin): void
   process(plugins: readonly Plugin[]): void
   process<State>(state: State, plugins: readonly Plugin<State>[]): void
   process(state: any, plugins?: readonly Plugin[]) {
-    if (is.array(state)) {
-      plugins = state
+    if (!plugins) {
+      plugins = is.array(state) ? state : [state]
       state = null
     }
     if (!is.array(plugins)) {
