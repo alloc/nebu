@@ -39,7 +39,7 @@ import { getContext, popContext, pushContext } from './context'
 
 export class NebuNode<T extends ESNode = any> {
   /** The node type. */
-  readonly type: T['type']
+  readonly type: [T] extends [Any] ? NodeType : T['type']
   /** The character index where this node starts. */
   readonly start: number
   /** The character index where this node ends. */
@@ -56,7 +56,7 @@ export class NebuNode<T extends ESNode = any> {
   depth?: number
 
   constructor(node: T, parent?: Node, ref?: string) {
-    this.type = node.type
+    this.type = node.type as any
     this.start = node.start!
     this.end = node.end!
     this.parent = parent!
