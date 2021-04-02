@@ -18,7 +18,7 @@ export type NodeProps<T extends ESTree.Node> = {
 
 // Convert property into Nebu type.
 type Nebufy<T, U = T> = U extends ESTree.Node
-  ? Node<Extract<T, ESTree.Node>>
+  ? ResolveNodeType<Extract<T, ESTree.Node>['type']>
   : U extends ReadonlyArray<infer Element>
   ? ReadonlyArray<Nebufy<Element>>
   : U
