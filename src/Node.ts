@@ -2,7 +2,7 @@ import { Any } from '@alloc/types'
 import { is } from '@alloc/is'
 import { KEYS } from 'eslint-visitor-keys'
 import {
-  ESTree,
+  ESNode,
   NodeConstructor,
   ResolveNodeType,
   NodeProp,
@@ -36,9 +36,8 @@ import { Walker } from './Walker'
 import { MagicSlice } from './MagicSlice'
 import { NodeProperties } from './NodeProperties'
 import { getContext, popContext, pushContext } from './context'
-import './types'
 
-export class NebuNode<T extends ESTree.Node = ESTree.Node> {
+export class NebuNode<T extends ESNode = any> {
   /** The node type. */
   readonly type: T['type']
   /** The character index where this node starts. */
@@ -365,7 +364,7 @@ export class NebuNode<T extends ESTree.Node = ESTree.Node> {
   }
 }
 
-export type Node<T extends ESTree.Node = any> = [T] extends [Any]
+export type Node<T extends ESNode = any> = [T] extends [Any]
   ? NebuNode
   : NebuNode<T> & NodeProps<T>
 

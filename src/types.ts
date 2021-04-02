@@ -5,20 +5,24 @@ import type { Node } from './Node'
 
 export type { ESTree }
 
-export type NodeProp<T extends ESTree.Node> = string &
-  (Exclude<keyof T, 'type' | keyof ESTree._Node> extends infer P
+export interface ESNode extends ESTree._Node {
+  type: string
+}
+
+export type NodeProp<T extends ESNode> = string &
+  (Exclude<keyof T, keyof ESNode> extends infer P
     ? [P] extends [never]
       ? unknown // coerce "never" to "unknown"
       : P
     : never)
 
-export type NodeProps<T extends ESTree.Node> = {
+export type NodeProps<T extends ESNode> = {
   [P in NodeProp<T> & keyof T]: Nebufy<T[P]>
 }
 
 // Convert property into Nebu type.
-type Nebufy<T, U = T> = U extends ESTree.Node
-  ? ResolveNodeType<Extract<T, ESTree.Node>['type']>
+type Nebufy<T, U = T> = U extends ESNode
+  ? ResolveNodeType<Extract<T, ESNode>['type']>
   : U extends ReadonlyArray<infer Element>
   ? ReadonlyArray<Nebufy<Element>>
   : U
@@ -28,7 +32,7 @@ export type CompositeNode<T> = T extends ESTree.Node
   : never
 
 export interface NodeConstructor extends StaticTypeGuards {
-  new <T extends ESTree.Node>(node: T, parent?: Node, ref?: string): Node<T>
+  new <T extends ESNode>(node: T, parent?: Node, ref?: string): Node<T>
 
   isNode(arg: any): arg is Node
   isDeclarationStatement(arg: any): arg is Node.DeclarationStatement
@@ -108,7 +112,7 @@ export interface Visitor<T = any, State = Lookup> {
 }
 
 export type NodeType = ESTree.Node['type']
-export type ResolveNodeType<T extends NodeType> = unknown &
+export type ResolveNodeType<T extends string> = unknown &
   TypeLookup[T & keyof TypeLookup]
 
 // All possible properties of a node.
@@ -130,7 +134,7 @@ export type Singular<T> = T extends ReadonlyArray<infer U>
   : Exclude<T, void>
 
 export type ArrayProp<
-  T extends ESTree.Node,
+  T extends ESNode,
   P extends NodeProp<T> & keyof T
 > = ReadonlyArray<
   Nebufy<
