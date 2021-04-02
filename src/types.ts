@@ -57,6 +57,11 @@ declare module './Node' {
       value: bigint
     }
 
+    // Fix "any" type of callee in meriyah.
+    export interface CallExpression {
+      callee: Node.Expression | Node.Super
+    }
+
     export type DeclarationStatement = CompositeNode<ESTree.DeclarationStatement>
     export type ExportDeclaration = CompositeNode<ESTree.ExportDeclaration>
     export type Expression = CompositeNode<ESTree.Expression>
