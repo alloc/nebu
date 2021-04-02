@@ -23,6 +23,10 @@ type Nebufy<T, U = T> = U extends ESTree.Node
   ? ReadonlyArray<Nebufy<Element>>
   : U
 
+export type CompositeNode<T> = T extends ESTree.Node
+  ? ResolveNodeType<T['type']>
+  : never
+
 export interface NodeConstructor extends StaticTypeGuards {
   new <T extends ESTree.Node>(node: T, parent?: Node, ref?: string): Node<T>
 
@@ -53,18 +57,15 @@ declare module './Node' {
       value: bigint
     }
 
-    export interface DeclarationStatement
-      extends Node<ESTree.DeclarationStatement> {}
-    export interface ExportDeclaration extends Node<ESTree.ExportDeclaration> {}
-    export interface Expression extends Node<ESTree.Expression> {}
-    export interface IterationStatement
-      extends Node<ESTree.IterationStatement> {}
-    export interface LeftHandSideExpression
-      extends Node<ESTree.LeftHandSideExpression> {}
-    export interface LiteralExpression extends Node<ESTree.LiteralExpression> {}
-    export interface Parameter extends Node<ESTree.Parameter> {}
-    export interface PrimaryExpression extends Node<ESTree.PrimaryExpression> {}
-    export interface Statement extends Node<ESTree.Statement> {}
+    export type DeclarationStatement = CompositeNode<ESTree.DeclarationStatement>
+    export type ExportDeclaration = CompositeNode<ESTree.ExportDeclaration>
+    export type Expression = CompositeNode<ESTree.Expression>
+    export type IterationStatement = CompositeNode<ESTree.IterationStatement>
+    export type LeftHandSideExpression = CompositeNode<ESTree.LeftHandSideExpression>
+    export type LiteralExpression = CompositeNode<ESTree.LiteralExpression>
+    export type Parameter = CompositeNode<ESTree.Parameter>
+    export type PrimaryExpression = CompositeNode<ESTree.PrimaryExpression>
+    export type Statement = CompositeNode<ESTree.Statement>
   }
   export interface NebuNode extends TypeGuards {}
   export interface NebuNode {
