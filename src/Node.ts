@@ -97,12 +97,12 @@ export class NebuNode<T extends ESNode = any> {
     }
   }
 
-  walk<P extends NodeProp<T> & keyof T>(
+  walk<P extends NodeProp<T> & Exclude<keyof T, keyof ESNode>>(
     prop: P,
     iter: (node: Singular<NodeProps<T>[P]>, i: number) => void
   ): void
 
-  walk<P extends Exclude<keyof this, keyof Node>>(
+  walk<P extends Exclude<keyof this, keyof Node | ESNode>>(
     prop: P,
     iter: (node: Singular<this[P]>, i: number) => void
   ): void
