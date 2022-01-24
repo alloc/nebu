@@ -8,7 +8,7 @@ Fast, extensible, statically typed, and light Javascript transformer. (pronounce
 
 **Why bother?** Nebu saves developers from the slow and heavy [Babel][1] compiler. Nebu skips AST-to-code generation, preferring simple string mutations, while keeping sourcemap support. This improves performance, preserves coding style, and makes plugins less clunky.
 
-If you need to transpile ES6+ to ES5, use [Bublé][2] *after* using Nebu.
+If you need to transpile ES6+ to ES5, use [Bublé][2] _after_ using Nebu.
 
 If you believe in Nebu's mission, consider building a Nebu plugin. The ecosystem is practically non-existent. It needs your help! 🤓
 
@@ -37,17 +37,19 @@ cd examples && pnpm i
 ## Usage
 
 ```js
-const nebu = require('nebu');
+const nebu = require('nebu')
 
 nebu.process(code, {
   ast: {}, // use an existing ESTree object
-  plugins: [{
-    Identifier(node) {
-      if (node.name == 'foo') {
-        node.replace('bar')
-      }
-    }
-  }],
+  plugins: [
+    {
+      Identifier(node) {
+        if (node.name == 'foo') {
+          node.replace('bar')
+        }
+      },
+    },
+  ],
 })
 ```
 
@@ -55,6 +57,7 @@ The `process` function traverses the AST depth-first, which means children are
 visited before neighbors, and parents are visited before children.
 
 The `process` function has the following options:
+
 - `ast?: object` pre-existing ESTree object
 - `state?: object` state passed to each visitor
 - `plugins: object[]` array of visitor maps
@@ -84,10 +87,11 @@ import { findParent } from 'nebu/utils'
 ## Node API
 
 Every node (except the root node) has these properties:
+
 - `parent: Node` the nearest container node
 - `ref: string` the parent property that contains us
 
-NOTE: Methods that take a `code` argument do *not* validate it for syntax errors. So be careful!
+NOTE: Methods that take a `code` argument do _not_ validate it for syntax errors. So be careful!
 
 ### isLiteral(type)
 
@@ -97,7 +101,7 @@ Check if `node.type` equals `"Literal"` and `typeof node.value` equals the given
 
 Slice the source code using `node.start` and `node.end` as boundaries.
 
-NOTE: This does *not* include mutations, so the return value is static.
+NOTE: This does _not_ include mutations, so the return value is static.
 
 ### process(state, plugins)
 
