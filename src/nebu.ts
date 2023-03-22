@@ -15,6 +15,7 @@ export interface NebuOptions<State = Lookup> {
   state?: State
   plugins: PluginOption<State>[]
   sourceMap?: boolean | 'inline'
+  sourceMapHiRes?: boolean
   sourceMapTarget?: string
   includeContent?: boolean
   generatedFile?: string
@@ -61,6 +62,7 @@ export const nebu = {
         file: opts.generatedFile,
         source: opts.filename,
         includeContent: opts.includeContent !== false,
+        hires: opts.sourceMapHiRes,
       }),
     }
 
