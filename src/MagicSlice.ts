@@ -1,18 +1,21 @@
 import MagicString, { OverwriteOptions } from 'magic-string'
 
 export class MagicSlice {
-  readonly end: number
+  readonly sourceStart: number
+  readonly sourceEnd: number
 
   constructor(
     readonly source: MagicSlice | MagicString,
     readonly start: number,
-    length: number
+    readonly end: number
   ) {
-    this.end = start + length
+    const offset = source instanceof MagicSlice ? source.start : 0
+    this.sourceStart = start - offset
+    this.sourceEnd = end - offset
   }
 
   get original(): string {
-    return this.source.original.slice(this.start, this.end)
+    return this.source.original.slice(this.sourceStart, this.sourceEnd)
   }
 
   getIndentString(): string {
@@ -20,22 +23,22 @@ export class MagicSlice {
   }
 
   append(content: string) {
-    this.source.appendRight(this.end, content)
+    this.source.appendRight(this.sourceEnd, content)
     return this
   }
 
   appendLeft(index: number, content: string) {
-    this.source.appendLeft(this.start + index, content)
+    this.source.appendLeft(this.sourceStart + index, content)
     return this
   }
 
   appendRight(index: number, content: string) {
-    this.source.appendRight(this.start + index, content)
+    this.source.appendRight(this.sourceStart + index, content)
     return this
   }
 
   move(start: number, end: number, index: number) {
-    this.source.move(this.start + start, this.start + end, index)
+    this.source.move(this.sourceStart + start, this.sourceStart + end, index)
     return this
   }
 
@@ -46,8 +49,8 @@ export class MagicSlice {
     options?: boolean | OverwriteOptions
   ) {
     this.source.overwrite(
-      this.start + start,
-      this.start + end,
+      this.sourceStart + start,
+      this.sourceStart + end,
       content,
       options
     )
@@ -55,26 +58,36 @@ export class MagicSlice {
   }
 
   prepend(content: string) {
-    this.source.prependLeft(this.start, content)
+    this.source.prependLeft(this.sourceStart, content)
     return this
   }
 
   prependLeft(index: number, content: string) {
-    this.source.prependLeft(this.start + index, content)
+    this.source.prependLeft(this.sourceStart + index, content)
     return this
   }
 
   prependRight(index: number, content: string) {
-    this.source.prependRight(this.start + index, content)
+    this.source.prependRight(this.sourceStart + index, content)
     return this
   }
 
   remove(start: number, end: number) {
-    this.source.remove(this.start + start, this.start + end)
+    this.source.remove(this.sourceStart + start, this.sourceStart + end)
     return this
   }
 
   addSourcemapLocation(index: number) {
-    this.source.addSourcemapLocation(this.start + index)
+    this.source.addSourcemapLocation(this.sourceStart + index)
   }
+}
+
+export function toRelativeIndex(
+  output: MagicSlice | MagicString,
+  absoluteIndex: number
+) {
+  if (output instanceof MagicSlice) {
+    return absoluteIndex - output.start
+  }
+  return absoluteIndex
 }

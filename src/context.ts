@@ -1,8 +1,8 @@
 import type { MagicSlice } from './MagicSlice'
 import type { Walker } from './Walker'
 import type { Node } from './Node'
-import { greedyRange } from './utils'
 import MagicString from 'magic-string'
+import { greedyRange } from './utils/greedyRange'
 
 export interface NebuContext {
   input: string
@@ -46,7 +46,7 @@ export function pushContext(
         if (!node.removed) {
           node.parent = parent
           node.ref = ref
-          output.remove(...greedyRange(output.original, node, i))
+          output.remove(...greedyRange(output, node, i))
           walker.drop(node)
         }
         if (++i === n) {

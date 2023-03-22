@@ -25,7 +25,6 @@ import {
 import {
   findParent,
   getArray,
-  greedyRange,
   indent,
   mergePlugins,
   noop,
@@ -33,9 +32,10 @@ import {
   stripIndent,
 } from './utils'
 import { Walker } from './Walker'
-import { MagicSlice } from './MagicSlice'
+import { MagicSlice, toRelativeIndex } from './MagicSlice'
 import { NodeProperties } from './NodeProperties'
 import { getContext, popContext, pushContext } from './context'
+import { greedyRange } from './utils/greedyRange'
 
 export class NebuNode<T extends ESNode = any> {
   /** The node type. */
@@ -150,7 +150,11 @@ export class NebuNode<T extends ESNode = any> {
 
     if (Node.isNode(val)) {
       const { output, walker } = getContext()
-      output.overwrite(val.start, val.end, code)
+      output.overwrite(
+        toRelativeIndex(output, val.start),
+        toRelativeIndex(output, val.end),
+        code
+      )
       walker.drop(val)
     }
   }
@@ -166,7 +170,7 @@ export class NebuNode<T extends ESNode = any> {
       node = arr === val ? this : val
       if (Node.isNode(node)) {
         const { output } = getContext()
-        output.appendRight(node.start + 1, code)
+        output.appendRight(toRelativeIndex(output, node.start) + 1, code)
       }
     }
   }
@@ -182,7 +186,7 @@ export class NebuNode<T extends ESNode = any> {
       node = arr === val ? this : val
       if (Node.isNode(node)) {
         const { output } = getContext()
-        output.appendLeft(node.start + 1, code)
+        output.appendLeft(toRelativeIndex(output, node.start) + 1, code)
       }
     }
   }
@@ -210,7 +214,7 @@ export class NebuNode<T extends ESNode = any> {
 
     if (code) {
       if (i !== 0) {
-        output.appendLeft(arr[i - 1].end, code)
+        output.appendLeft(toRelativeIndex(output, arr[i - 1].end), code)
       } else {
         if (Node.isBlockStatement(this)) {
           this.depth ??= parseDepth(this, tab, input)
@@ -224,18 +228,24 @@ export class NebuNode<T extends ESNode = any> {
   before(code: string, index = this.start) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.prependLeft(index, indent(code, tab, this.depth))
+    output.prependLeft(
+      toRelativeIndex(output, index),
+      indent(code, tab, this.depth)
+    )
   }
 
   after(code: string, index = this.end) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.appendRight(index, indent(code, tab, this.depth))
+    output.appendRight(
+      toRelativeIndex(output, index),
+      indent(code, tab, this.depth)
+    )
   }
 
   indent(depth = 1) {
     const { input, output, tab } = getContext()
-    const [start, end] = Array.from(greedyRange(input, this))
+    const [start, end] = Array.from(greedyRange(output, this))
     const prefix = tab.repeat(depth)
     let i = start - 1
     while (true) {
@@ -254,7 +264,7 @@ export class NebuNode<T extends ESNode = any> {
     if (depth <= 0) {
       return
     }
-    const [start, end] = Array.from(greedyRange(input, this))
+    const [start, end] = Array.from(greedyRange(output, this))
     const width = tab.length * depth
     let i = start - 1
     while (true) {
@@ -268,7 +278,11 @@ export class NebuNode<T extends ESNode = any> {
 
   replace(code: string) {
     const { output, walker } = getContext()
-    output.overwrite(this.start, this.end, code)
+    output.overwrite(
+      toRelativeIndex(output, this.start),
+      toRelativeIndex(output, this.end),
+      code
+    )
     walker.drop(this)
   }
 
@@ -277,9 +291,9 @@ export class NebuNode<T extends ESNode = any> {
       return
     }
 
-    const { input, output, walker, removeNodes } = getContext()
+    const { output, walker, removeNodes } = getContext()
     if (!prop) {
-      output.remove(...greedyRange(input, this))
+      output.remove(...greedyRange(output, this))
       walker.drop(this)
       return
     }
@@ -294,7 +308,10 @@ export class NebuNode<T extends ESNode = any> {
     } else if (val.type === 'BlockStatement') {
       removeNodes(val.body, val, 'body', 0, Infinity)
     } else if (typeof val.type === 'string') {
-      output.remove(val.start, val.end)
+      output.remove(
+        toRelativeIndex(output, val.start),
+        toRelativeIndex(output, val.end)
+      )
       walker.drop(val)
     }
   }
