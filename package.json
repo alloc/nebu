@@ -19,9 +19,9 @@
   "dependencies": {
     "@alloc/is": "^3.0.0",
     "@alloc/types": "^2.0.0",
-    "eslint-visitor-keys": "^2.0.0",
+    "eslint-visitor-keys": "^3.3.0",
     "magic-string": "~0.24.0",
-    "meriyah": "^4.1.5"
+    "meriyah": "^4.3.5"
   },
   "devDependencies": {
     "@alloc/fast-rimraf": "^1.0.8",
