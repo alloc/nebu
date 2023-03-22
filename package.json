@@ -7,13 +7,13 @@
   "repository": "https://github.com/aleclarson/nebu.git",
   "prettier": "@alloc/prettier-config",
   "scripts": {
-    "build": "node scripts/extractTypeGuards && tsc -p .",
+    "dev": "tsc -p . --watch --sourceMap --declarationMap",
+    "build": "rimraf dist && node scripts/extractTypeGuards && tsc -p .",
     "prepare": "yarn build"
   },
   "files": [
     "dist",
-    "utils",
-    "src"
+    "utils"
   ],
   "dependencies": {
     "@alloc/is": "^3.0.0",
@@ -23,6 +23,7 @@
     "meriyah": "^4.1.5"
   },
   "devDependencies": {
+    "@alloc/fast-rimraf": "^1.0.8",
     "@alloc/prettier-config": "^1.0.0",
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/jest": "^26.0.21",

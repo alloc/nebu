@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@alloc/fast-rimraf': ^1.0.8
   '@alloc/is': ^3.0.0
   '@alloc/prettier-config': ^1.0.0
   '@alloc/types': ^2.0.0
@@ -24,6 +25,7 @@ dependencies:
   meriyah: 4.1.5
 
 devDependencies:
+  '@alloc/fast-rimraf': 1.0.8
   '@alloc/prettier-config': 1.0.0
   '@types/eslint-visitor-keys': 1.0.0
   '@types/jest': 26.0.21
@@ -40,6 +42,11 @@ packages:
     resolution: {integrity: sha512-Wz9Jdb/J7YYbt9ANNOMyZCqHa90zNbjWqetKJsOtID8vfyK7r8xLBLCBMZYoAitTY5GobPlebSd+5uNinpZfrQ==}
     peerDependencies:
       esbuild: '>=0.8.31'
+    dev: true
+
+  /@alloc/fast-rimraf/1.0.8:
+    resolution: {integrity: sha512-TsRTRLLDW6Q4fWBAYlbkcaHQDAANKsI0smrhS/1x7/GHcjVxo+r+2VRbqrWaYpmjdhvCp5v7n2wtwkMYp+Kivw==}
+    hasBin: true
     dev: true
 
   /@alloc/is/3.0.0:
