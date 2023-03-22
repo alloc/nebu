@@ -166,6 +166,14 @@ export class NebuNode<T extends ESNode = any> {
     if (Node.isNode(node)) {
       node.after(code)
     } else {
+      // TODO: relocate this JSX logic
+      if (!node && this.isJSXOpeningElement() && prop == 'attributes') {
+        // Append the attribute after the tag name.
+        const { output } = getContext()
+        output.appendRight(toRelativeIndex(output, this.name.end), code)
+        return
+      }
+
       const val: any = this[prop as keyof this]
       node = arr === val ? this : val
       if (Node.isNode(node)) {
