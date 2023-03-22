@@ -13,7 +13,8 @@
   },
   "files": [
     "dist",
-    "utils"
+    "utils.js",
+    "utils.d.ts"
   ],
   "dependencies": {
     "@alloc/is": "^3.0.0",
