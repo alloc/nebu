@@ -389,6 +389,11 @@ export class NebuNode<T extends ESNode = any> {
   }
 }
 
+export interface NebuNode<T extends ESNode> {
+  /** The underlying ESTree node. */
+  readonly n: T
+}
+
 export type Node<T extends ESNode = any> = [T] extends [Any]
   ? NebuNode
   : NebuNode<T> & NodeProps<T>
