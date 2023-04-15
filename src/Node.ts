@@ -324,36 +324,36 @@ export class NebuNode<T extends ESNode = any> {
     }
   }
 
-  isLiteral(type?: string) {
+  isLiteral(type?: string): this is Node.Literal {
     return type == null
       ? this.type == 'Literal'
       : this.isLiteral() && type == is.what(this.value)
   }
-  isDeclarationStatement() {
+  isDeclarationStatement(): this is Node.DeclarationStatement {
     return Node.isDeclarationStatement(this)
   }
-  isExportDeclaration() {
+  isExportDeclaration(): this is Node.ExportDeclaration {
     return Node.isExportDeclaration(this)
   }
-  isExpression() {
+  isExpression(): this is Node.Expression {
     return Node.isExpression(this)
   }
-  isIterationStatement() {
+  isIterationStatement(): this is Node.IterationStatement {
     return Node.isIterationStatement(this)
   }
-  isLeftHandSideExpression() {
+  isLeftHandSideExpression(): this is Node.LeftHandSideExpression {
     return Node.isLeftHandSideExpression(this)
   }
-  isLiteralExpression() {
+  isLiteralExpression(): this is Node.LiteralExpression {
     return Node.isLiteralExpression(this)
   }
-  isParameter() {
+  isParameter(): this is Node.Parameter {
     return Node.isParameter(this)
   }
-  isPrimaryExpression() {
+  isPrimaryExpression(): this is Node.PrimaryExpression {
     return Node.isPrimaryExpression(this)
   }
-  isStatement() {
+  isStatement(): this is Node.Statement {
     return Node.isStatement(this)
   }
 
