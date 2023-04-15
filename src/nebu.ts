@@ -28,7 +28,7 @@ export interface NebuResult {
 }
 
 export const nebu = {
-  process(input: string, opts: NebuOptions): NebuResult {
+  process<State>(input: string, opts: NebuOptions<State>): NebuResult {
     const plugins = mergePlugins(opts.plugins)
     if (!Object.keys(plugins).length) {
       return { js: input }
@@ -44,7 +44,7 @@ export const nebu = {
     )
 
     const output = new MagicString(input)
-    const walker = new Walker(opts.state || {}, plugins)
+    const walker = new Walker((opts.state || {}) as State, plugins)
 
     program.depth = 0
     pushContext(output, walker)

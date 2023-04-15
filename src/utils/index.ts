@@ -149,7 +149,9 @@ export function getArray(node: Node, prop: string) {
   throw Error(`"${prop}" is not an array or BlockStatement`)
 }
 
-export function mergePlugins(plugins: readonly PluginOption[]): PluginMap {
+export function mergePlugins<State>(
+  plugins: readonly PluginOption<State>[]
+): PluginMap<State> {
   const merged: any = {}
   for (let plugin of plugins) {
     if (plugin) {
