@@ -37,6 +37,7 @@ export const nebu = {
     const program = new Node(
       opts.ast ||
         require('meriyah').parse(input, {
+          next: true,
           ranges: true,
           module: true,
           jsx: opts.jsx,
