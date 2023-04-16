@@ -64,7 +64,7 @@ export function greedyRange(
 
   // Avoid extra work if we are the first node on our starting line.
   if (start === lineStart) {
-    start = lineStart - 1
+    start = Math.max(0, lineStart - 1)
   } else {
     // Find a sibling before us that isn't stale yet.
     if (sibs) {
