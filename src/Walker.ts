@@ -1,11 +1,17 @@
 import type { Lookup } from '@alloc/types'
 import type { PluginMap, Visitor } from './types'
-import { Node } from './Node'
 import { KEYS } from 'eslint-visitor-keys'
 import { is } from '@alloc/is'
+import { ESTree } from 'meriyah'
+
+type WalkableNode = ESTree.Node &
+  Record<string, any> & {
+    removed?: boolean
+    yields?: Set<() => void>
+  }
 
 export class Walker<State = Lookup> {
-  stack: Node[] = []
+  stack: WalkableNode[] = []
   yielded = new Set<any>()
 
   constructor(
@@ -16,14 +22,14 @@ export class Walker<State = Lookup> {
   ) {}
 
   // Depth-first traversal, parents first
-  walk(node: Node) {
+  walk(node: WalkableNode) {
     if (node.removed) {
       return
     }
 
     this.stack.push(node)
 
-    const visitors = this.plugins[node.type] as Visitor[]
+    const visitors = this.plugins[node.type] as Visitor<any, State>[]
     if (visitors) {
       for (const visitor of visitors) {
         visitor(node, this.state)
@@ -46,7 +52,7 @@ export class Walker<State = Lookup> {
   }
 
   // Traverse deeper.
-  descend(node: Node) {
+  descend(node: WalkableNode) {
     let k = -1
     const keys = KEYS[node.type]
     if (!keys) {
@@ -54,7 +60,7 @@ export class Walker<State = Lookup> {
     }
     while (++k !== keys.length) {
       const key = keys[k]
-      const val: any = node[key as keyof Node]
+      const val = node[key]
       if (!val) {
         continue
       }
@@ -79,7 +85,7 @@ export class Walker<State = Lookup> {
   }
 
   // Prevent traversal of a node and its descendants.
-  drop(node: Node) {
+  drop(node: WalkableNode) {
     const { stack } = this
 
     let i = stack.indexOf(node)

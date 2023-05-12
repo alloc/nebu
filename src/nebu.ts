@@ -80,6 +80,19 @@ export const nebu = {
 
     return res
   },
+  /**
+   * This method is useful for collecting ESTree nodes before you make
+   * any changes with `nebu.process`. When you separate the collection
+   * and mutation phases, you're able to *asynchronously* generate
+   * metadata needed to inform how you'll mutate the AST.
+   */
+  walk(rootNode: ESTree.Node, plugins: Plugin<void> | Plugin<void>[]): void {
+    const pluginMap = mergePlugins(Array.isArray(plugins) ? plugins : [plugins])
+    if (Object.keys(pluginMap).length) {
+      const walker = new Walker<void>(undefined, pluginMap)
+      walker.walk(rootNode)
+    }
+  },
 }
 
 declare global {
