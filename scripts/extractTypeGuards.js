@@ -1,5 +1,5 @@
 const { KEYS } = require('eslint-visitor-keys')
-const endent = require('endent')
+const endent = require('endent').default
 const fs = require('fs')
 
 let lines = [
