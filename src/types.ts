@@ -112,6 +112,11 @@ export type NodeType = ESTree.Node['type']
 export type ResolveNodeType<T extends string> = unknown &
   TypeLookup[T & keyof TypeLookup]
 
+export type ResolveNodeProp<T extends { type: string }> = Exclude<
+  T extends Node<infer U> ? keyof U : keyof T,
+  keyof ESNode
+>
+
 // All possible properties of a node.
 export type AllNodeProps = ESTree.Node extends infer T
   ? T extends infer Node
