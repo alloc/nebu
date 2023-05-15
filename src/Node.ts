@@ -249,19 +249,33 @@ export class NebuNode<T extends ESNode = any> {
   before(code: string, index = this.start) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.prependLeft(
-      toRelativeIndex(output, index),
-      indent(code, tab, this.depth)
-    )
+    index = toRelativeIndex(output, index)
+    if (code.endsWith('\n')) {
+      // Use appendLeft to avoid removing this code if this node is
+      // later removed.
+      output.appendLeft(index, indent(code, tab, this.depth))
+      return
+    }
+    // By using prependRight, this code will be removed if this node is
+    // later removed. After this method returns, appendRight on the same
+    // index will insert after this code, but before this node.
+    output.prependRight(index, indent(code, tab, this.depth))
   }
 
   after(code: string, index = this.end) {
     const { input, output, tab } = getContext()
     this.depth ??= parseDepth(this, tab, input)
-    output.appendRight(
-      toRelativeIndex(output, index),
-      indent(code, tab, this.depth)
-    )
+    index = toRelativeIndex(output, index)
+    if (code.startsWith('\n')) {
+      // Use prependRight to avoid removing this code if this node is
+      // later removed.
+      output.prependRight(index, indent(code, tab, this.depth))
+      return
+    }
+    // By using appendLeft, this code will be removed if this node is
+    // later removed. After this method returns, prependLeft on the same
+    // index will insert before this code, but after this node.
+    output.appendLeft(index, indent(code, tab, this.depth))
   }
 
   indent(depth = 1) {

@@ -38,7 +38,7 @@ describe('node.set:', () => {
       expect(output.js).toBe('let a = [1, 2]')
     })
 
-    test.only('(multi-line array literal)', () => {
+    test('(multi-line array literal)', () => {
       const input = endent`
         let a = [
           1, 2, 3,
@@ -79,16 +79,32 @@ describe('node.set:', () => {
       try {
         if (a()) {
           return b()
-        }
-      } catch(e) {}
+        }} catch(e) {}
     `)
   })
 })
 // describe('node.push:', () => {
 // });
 
-// describe('node.unshift:', () => {
-// });
+describe('node.unshift:', () => {
+  test('unshift beats before', () => {
+    // When unshift is called on the parent and before is called on the
+    // first child, the unshifted code should appear first.
+    const input = 'function a() {}'
+    const output = nebu.process(input, {
+      Program: program => {
+        program.unshift('body', 'import {b} from "b"\n')
+        program.body[0].before('const a = b(')
+        program.body[0].after(')')
+      },
+    })
+
+    expect(output.js).toMatchInlineSnapshot(`
+      "const a = b(import {b} from \\"b\\"
+      function a() {})"
+    `)
+  })
+})
 
 // describe('node.splice:', () => {
 // });

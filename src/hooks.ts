@@ -8,6 +8,16 @@ import type {
 
 export interface SyntaxHooks<T extends Node = any> {
   /**
+   * Called when code is unshifted to an array property.
+   *
+   * Return true to prevent default behavior.
+   */
+  unshift?<U extends T>(
+    node: U,
+    prop: ResolveNodeProp<U>,
+    code: string
+  ): boolean | void
+  /**
    * Called when code is pushed to an array property that was previously
    * empty.
    *
