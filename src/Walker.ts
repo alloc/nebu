@@ -1,38 +1,37 @@
 import { isArray } from '@alloc/is'
 import type { Lookup } from '@alloc/types'
-import type { PluginMap, Visitor } from './types'
 import { KEYS } from 'eslint-visitor-keys'
-import { ESTree } from 'meriyah'
+import type { VisitorMap } from './types'
+import { AnyNode } from './types'
 
-type WalkableNode = ESTree.Node &
-  Record<string, any> & {
-    removed?: boolean
-    yields?: Set<() => void>
-  }
+type WalkableNode = {
+  type: string
+  removed?: boolean
+  yields?: (() => void)[]
+}
 
-export class Walker<State = Lookup> {
-  stack: WalkableNode[] = []
-  yielded = new Set<any>()
+export class Walker<State = Lookup, T extends WalkableNode = AnyNode> {
+  stack: T[] = []
 
   constructor(
     /** State shared between plugins */
     readonly state: State,
     /** Visitor plugins */
-    readonly plugins: PluginMap<State>
+    readonly plugins: VisitorMap<State, T>
   ) {}
 
   // Depth-first traversal, parents first
-  walk(node: WalkableNode) {
+  walk(node: T) {
     if (node.removed) {
       return
     }
 
     this.stack.push(node)
 
-    const visitors = this.plugins[node.type] as Visitor<any, State>[]
+    const visitors = this.plugins.get(node.type)
     if (visitors) {
       for (const visitor of visitors) {
-        visitor(node, this.state)
+        visitor(node as any, this.state)
         if (node.removed) {
           return
         }
@@ -52,7 +51,7 @@ export class Walker<State = Lookup> {
   }
 
   // Traverse deeper.
-  descend(node: WalkableNode) {
+  descend(node: T) {
     let k = -1
     const keys = KEYS[node.type]
     if (!keys) {
@@ -60,7 +59,7 @@ export class Walker<State = Lookup> {
     }
     while (++k !== keys.length) {
       const key = keys[k]
-      const val = node[key]
+      const val = (node as any)[key]
       if (!val) {
         continue
       }
@@ -85,7 +84,7 @@ export class Walker<State = Lookup> {
   }
 
   // Prevent traversal of a node and its descendants.
-  drop(node: WalkableNode) {
+  drop(node: T) {
     const { stack } = this
 
     let i = stack.indexOf(node)

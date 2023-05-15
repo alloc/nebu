@@ -56,7 +56,7 @@ const literalTypes = {
 
 export class NebuNode<T extends ESNode = any> {
   /** The node type. */
-  readonly type: [T] extends [Any] ? NodeType : T['type']
+  readonly type: [T] extends [Any] ? NodeType : Extract<T['type'], NodeType>
   /** The character index where this node starts. */
   readonly start: number
   /** The character index where this node ends. */
@@ -101,13 +101,11 @@ export class NebuNode<T extends ESNode = any> {
       plugins = isArray(state) ? state : [state]
       state = null
     }
-    if (!is.array(plugins)) {
-      throw TypeError('"plugins" must be an array')
-    }
     if (!this.removed) {
       const { output } = getContext()
       const slice = new MagicSlice(output, this.start, this.end)
-      const walker = new Walker(state, mergePlugins(plugins))
+      const visitors = mergePlugins(plugins)
+      const walker = new Walker<any, Node>(state, visitors as any)
       pushContext(slice, walker)
       walker.walk(this)
       popContext()
