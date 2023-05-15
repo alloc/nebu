@@ -149,21 +149,24 @@ export function getArray(node: Node, prop: string) {
   throw Error(`"${prop}" is not an array or BlockStatement`)
 }
 
-export function mergePlugins<State>(
-  plugins: readonly PluginOption<State>[]
-): PluginMap<State> {
-  const merged: any = {}
+export function mergePlugins<State, T extends { type: string }>(
+  plugins: readonly PluginOption<State, T>[]
+): VisitorMap<State, T> {
+  const merged: VisitorMap<State, T> = new Map()
   for (let plugin of plugins) {
     if (plugin) {
       if ('default' in plugin) {
         plugin = plugin.default
       }
       for (const key in plugin) {
-        const visitor = (plugin as any)[key] as Visitor
-        if (merged[key]) {
-          merged[key].push(visitor)
+        // @ts-ignore
+        const visitor = plugin[key]
+        const visitors = merged.get(key)
+        if (visitors) {
+          // @ts-ignore
+          visitors.push(visitor)
         } else {
-          merged[key] = [visitor]
+          merged.set(key, [visitor])
         }
       }
     }

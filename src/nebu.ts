@@ -3,10 +3,10 @@ import MagicString, { SourceMap } from 'magic-string'
 import { relative, dirname } from 'path'
 import { ESTree, Plugin, PluginOption } from './types'
 import { popContext, pushContext } from './context'
+import { ESTree, Plugin, PluginOption } from './types'
 import { mergePlugins } from './utils'
-import { Walker } from './Walker'
-import { Node } from './Node'
 
+export type { PluginOption, Visitor, AnyNode } from './types'
 export { Node, Plugin }
 
 export interface NebuOptions<State = Lookup> {
@@ -27,10 +27,29 @@ export interface NebuResult {
   map?: SourceMap
 }
 
-export const nebu = {
+interface Nebu {
+  process<State extends object>(
+    input: string,
+    opts: NebuOptions<State>
+  ): NebuResult
+  process(input: string, opts: NebuOptions): NebuResult
+
+  /**
+   * This method is useful for collecting ESTree nodes before you make
+   * any changes with `nebu.process`. When you separate the collection
+   * and mutation phases, you're able to *asynchronously* generate
+   * metadata needed to inform how you'll mutate the AST.
+   */
+  walk(
+    rootNode: ESTree.Node,
+    plugins: Plugin<void, ESTree.Node> | Plugin<void, ESTree.Node>[]
+  ): void
+}
+
+export const nebu: Nebu = {
   process<State>(input: string, opts: NebuOptions<State>): NebuResult {
-    const plugins = mergePlugins(opts.plugins)
-    if (!Object.keys(plugins).length) {
+    const visitors = mergePlugins(opts.plugins)
+    if (!visitors.size) {
       return { js: input }
     }
 
@@ -45,7 +64,7 @@ export const nebu = {
     )
 
     const output = new MagicString(input)
-    const walker = new Walker((opts.state || {}) as State, plugins)
+    const walker = new Walker<any, Node>(opts.state || {}, visitors as any)
 
     program.depth = 0
     pushContext(output, walker)
@@ -80,16 +99,10 @@ export const nebu = {
 
     return res
   },
-  /**
-   * This method is useful for collecting ESTree nodes before you make
-   * any changes with `nebu.process`. When you separate the collection
-   * and mutation phases, you're able to *asynchronously* generate
-   * metadata needed to inform how you'll mutate the AST.
-   */
-  walk(rootNode: ESTree.Node, plugins: Plugin<void> | Plugin<void>[]): void {
-    const pluginMap = mergePlugins(Array.isArray(plugins) ? plugins : [plugins])
-    if (Object.keys(pluginMap).length) {
-      const walker = new Walker<void>(undefined, pluginMap)
+  walk(rootNode, plugins) {
+    const visitors = mergePlugins(Array.isArray(plugins) ? plugins : [plugins])
+    if (visitors.size) {
+      const walker = new Walker(undefined, visitors)
       walker.walk(rootNode)
     }
   },

@@ -7,7 +7,7 @@ import { greedyRange } from './utils/greedyRange'
 export interface NebuContext {
   input: string
   output: MagicString | MagicSlice
-  walker: Walker<any>
+  walker: Walker<any, Node>
   tab: string
   /** Remove a range of nodes */
   removeNodes(
@@ -30,7 +30,7 @@ export function getContext() {
 
 export function pushContext(
   output: MagicString | MagicSlice,
-  walker: Walker<any>
+  walker: Walker<any, Node>
 ) {
   contextStack.push({
     get input() {

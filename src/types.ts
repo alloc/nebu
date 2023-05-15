@@ -1,7 +1,7 @@
-import type { Lookup } from '@alloc/types'
+import type { Falsy, Lookup } from '@alloc/types'
 import type { ESTree } from 'meriyah'
-import type { StaticTypeGuards, TypeGuards, TypeLookup } from './typeGuards'
 import type { Node } from './Node'
+import type { StaticTypeGuards, TypeGuards, TypeLookup } from './typeGuards'
 
 export type { ESTree }
 
@@ -88,28 +88,25 @@ declare module './Node' {
   }
 }
 
-export type PluginMap<State = Lookup> = {
-  [P in NodeType]?: P extends keyof TypeLookup
-    ? readonly Visitor<TypeLookup[P], State>[]
-    : never
+export type PluginOption<
+  State = Lookup,
+  T extends { type: string } = AnyNode
+> = { default: Plugin<State, T> } | Plugin<State, T> | Falsy
+
+export type AnyNode = TypeLookup[keyof TypeLookup]
+
+export type Plugin<State = Lookup, T extends { type: string } = AnyNode> = {
+  [P in T['type']]?: Visitor<State, Extract<T, { type: P }>>
 }
 
-type Falsy = false | null | undefined
-
-export type PluginOption<State = Lookup> =
-  | { default: Plugin<State> }
-  | Plugin<State>
-  | Falsy
-
-export type Plugin<State = Lookup> = {
-  [P in NodeType]?: P extends keyof TypeLookup
-    ? Visitor<TypeLookup[P], State>
-    : never
-}
-
-export interface Visitor<T = any, State = Lookup> {
+export interface Visitor<State = Lookup, T extends { type: string } = AnyNode> {
   (node: T, state: State): void
 }
+
+export type VisitorMap<
+  State = Lookup,
+  T extends { type: string } = AnyNode
+> = Map<string, readonly Visitor<State, T>[]>
 
 export type NodeType = ESTree.Node['type']
 export type ResolveNodeType<T extends string> = unknown &
