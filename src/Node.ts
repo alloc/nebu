@@ -175,24 +175,22 @@ export class NebuNode<T extends ESNode = any> {
   }
 
   push(prop: NodeProp<T>, code: string) {
+    const { applyHook, output } = getContext()
     const arr = getArray(this, prop)
+
+    if (!arr.length && applyHook('pushFirst', this, prop, code)) {
+      return
+    }
 
     let node = arr[arr.length - 1]
     if (Node.isNode(node)) {
       node.after(code)
     } else {
-      // TODO: relocate this JSX logic
-      if (!node && this.isJSXOpeningElement() && prop == 'attributes') {
-        // Append the attribute after the tag name.
-        const { output } = getContext()
-        output.appendRight(toRelativeIndex(output, this.name.end), code)
-        return
-      }
-
+      // By default, if the array property is empty, we assume this node
+      // has braces and append the code after the opening brace.
       const val: any = this[prop as keyof this]
       node = arr === val ? this : val
       if (Node.isNode(node)) {
-        const { output } = getContext()
         output.appendRight(toRelativeIndex(output, node.start) + 1, code)
       }
     }

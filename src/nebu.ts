@@ -1,10 +1,12 @@
 import { Lookup } from '@alloc/types'
 import MagicString, { SourceMap } from 'magic-string'
-import { relative, dirname } from 'path'
-import { ESTree, Plugin, PluginOption } from './types'
+import { dirname, relative } from 'path'
+import { Node } from './Node'
+import { Walker } from './Walker'
 import { popContext, pushContext } from './context'
 import { ESTree, Plugin, PluginOption } from './types'
 import { mergePlugins } from './utils'
+import { SyntaxHooksVisitor } from './hooks'
 
 export type { PluginOption, Visitor, AnyNode } from './types'
 export { Node, Plugin }
@@ -13,6 +15,7 @@ export interface NebuOptions<State = Lookup> {
   ast?: ESTree.Program
   jsx?: boolean
   state?: State
+  hooks?: SyntaxHooksVisitor
   plugins: PluginOption<State>[]
   sourceMap?: boolean | 'inline'
   sourceMapHiRes?: boolean
@@ -67,7 +70,7 @@ export const nebu: Nebu = {
     const walker = new Walker<any, Node>(opts.state || {}, visitors as any)
 
     program.depth = 0
-    pushContext(output, walker)
+    pushContext(output, walker, opts.hooks)
     walker.walk(program)
     popContext()
 

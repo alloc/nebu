@@ -1,13 +1,6 @@
 import { isArray } from '@alloc/is'
-import {
-  ArrayProp,
-  ESTree,
-  NodeProp,
-  PluginMap,
-  PluginOption,
-  Visitor,
-} from '../types'
 import type { Node } from '../Node'
+import { ArrayProp, ESTree, NodeProp, PluginOption, VisitorMap } from '../types'
 
 const matchType = (type: string) => (node: Node) => node.type === type
 
@@ -172,4 +165,21 @@ export function mergePlugins<State, T extends { type: string }>(
     }
   }
   return merged
+}
+
+export function searchString<Result>(
+  str: string,
+  start: number,
+  test: (char: string, offset: number) => Result | false | void
+): Result | undefined {
+  let i = start
+  let char = str[i]
+  let result: any
+  while (char) {
+    result = test(char, i)
+    if (result !== false && result !== void 0) {
+      return result
+    }
+    char = str[++i]
+  }
 }
