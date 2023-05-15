@@ -33,8 +33,13 @@ export interface NebuResult {
 interface Nebu {
   process<State extends object>(
     input: string,
+    plugin: Plugin<State> | PluginOption<State>[]
+  ): NebuResult
+  process<State extends object>(
+    input: string,
     opts: NebuOptions<State>
   ): NebuResult
+  process(input: string, plugin: Plugin | PluginOption[]): NebuResult
   process(input: string, opts: NebuOptions): NebuResult
 
   /**
@@ -50,7 +55,16 @@ interface Nebu {
 }
 
 export const nebu: Nebu = {
-  process<State>(input: string, opts: NebuOptions<State>): NebuResult {
+  process(
+    input: string,
+    opts: NebuOptions<any> | Plugin<any> | PluginOption<any>[]
+  ): NebuResult {
+    if (Array.isArray(opts)) {
+      opts = { plugins: opts }
+    } else if (!('plugins' in opts)) {
+      opts = { plugins: [opts] }
+    }
+
     const visitors = mergePlugins(opts.plugins)
     if (!visitors.size) {
       return { js: input }
