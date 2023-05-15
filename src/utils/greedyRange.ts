@@ -27,7 +27,7 @@ export function greedyRange(
   }
 
   // Be sibling-aware.
-  let sibs: any = parent[ref as keyof Node]
+  let sibs = parent[ref as keyof Node] as Node[] | null
   if (!Array.isArray(sibs)) {
     i = 0
     sibs = null
@@ -37,11 +37,11 @@ export function greedyRange(
     }
     const len = sibs.length
     if (i !== len - 1) {
-      // Find a sibling after us that isn't stale yet.
+      // Find a sibling after us that isn't removed yet.
       let j = i
       while (++j !== len) {
         sib = sibs[j]
-        if (!sib.stale) {
+        if (!sib.removed) {
           sibAfter = sib
           break
         }
@@ -50,9 +50,9 @@ export function greedyRange(
       if (sibAfter) {
         // Take ownership until the start of the sibling after us
         // if it exists on the same line that we end on.
-        const sibStart = toRelativeIndex(output, sib.start)
-        if (sibStart < lineEnd) {
-          end = sibStart
+        const sibAfterStart = toRelativeIndex(output, sibAfter.start)
+        if (sibAfterStart < lineEnd) {
+          end = sibAfterStart
           return [start, end]
         }
       }
@@ -66,11 +66,11 @@ export function greedyRange(
   if (start === lineStart) {
     start = Math.max(0, lineStart - 1)
   } else {
-    // Find a sibling before us that isn't stale yet.
+    // Find a sibling before us that isn't removed yet.
     if (sibs) {
       while (--i !== -1) {
         sib = sibs[i]
-        if (!sib.stale) {
+        if (!sib.removed) {
           sibBefore = sib
           break
         }
@@ -87,8 +87,8 @@ export function greedyRange(
     // leading and trailing whitespace in the same removal, unless no
     // siblings exist on our line(s).
     if (sibBefore) {
-      const sibEnd = toRelativeIndex(output, sib.end)
-      start = Math.max(sibEnd, lineStart - 1)
+      const sibBeforeEnd = toRelativeIndex(output, sibBefore.end)
+      start = Math.max(sibBeforeEnd, lineStart - 1)
     }
     // Take ownership of the leading newline if our parent doesn't start on it.
     else {
