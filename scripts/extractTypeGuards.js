@@ -1,5 +1,5 @@
 const { KEYS } = require('eslint-visitor-keys')
-const dedent = require('dedent')
+const endent = require('endent')
 const fs = require('fs')
 
 let lines = [
@@ -14,7 +14,7 @@ let lines = [
   'export namespace Node {',
 ]
 
-let append = text => lines.push('  ' + dedent(text))
+let append = text => lines.push('  ' + endent(text))
 
 const lookup = []
 const guards = []
