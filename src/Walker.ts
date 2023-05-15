@@ -1,7 +1,7 @@
+import { isArray } from '@alloc/is'
 import type { Lookup } from '@alloc/types'
 import type { PluginMap, Visitor } from './types'
 import { KEYS } from 'eslint-visitor-keys'
-import { is } from '@alloc/is'
 import { ESTree } from 'meriyah'
 
 type WalkableNode = ESTree.Node &
@@ -69,7 +69,7 @@ export class Walker<State = Lookup> {
         if (node.removed) {
           return
         }
-      } else if (is.array(val)) {
+      } else if (isArray(val)) {
         let i = -1
         while (++i !== val.length) {
           const elem = val[i]

@@ -1,5 +1,13 @@
 import { Any } from '@alloc/types'
-import { is } from '@alloc/is'
+import {
+  isArray,
+  isString,
+  isNumber,
+  isBoolean,
+  isRegExp,
+  isBigint,
+  isNull,
+} from '@alloc/is'
 import { KEYS } from 'eslint-visitor-keys'
 import {
   ESNode,
@@ -36,6 +44,15 @@ import { MagicSlice, toRelativeIndex } from './MagicSlice'
 import { NodeProperties } from './NodeProperties'
 import { getContext, popContext, pushContext } from './context'
 import { greedyRange } from './utils/greedyRange'
+
+const literalTypes = {
+  string: isString,
+  number: isNumber,
+  boolean: isBoolean,
+  null: isNull,
+  RegExp: isRegExp,
+  bigint: isBigint,
+}
 
 export class NebuNode<T extends ESNode = any> {
   /** The node type. */
@@ -81,7 +98,7 @@ export class NebuNode<T extends ESNode = any> {
   process<State>(state: State, plugins: readonly Plugin<State>[]): void
   process(state: any, plugins?: readonly Plugin[]) {
     if (!plugins) {
-      plugins = is.array(state) ? state : [state]
+      plugins = isArray(state) ? state : [state]
       state = null
     }
     if (!is.array(plugins)) {
@@ -113,7 +130,7 @@ export class NebuNode<T extends ESNode = any> {
       return
     }
 
-    if (is.array(val)) {
+    if (isArray(val)) {
       val.forEach(iter)
     } else if (val.type) {
       iter(val, 0)
@@ -140,7 +157,7 @@ export class NebuNode<T extends ESNode = any> {
       return
     }
 
-    if (is.array(val)) {
+    if (isArray(val)) {
       return this.splice(prop, 0, Infinity, code)
     }
 
@@ -311,7 +328,7 @@ export class NebuNode<T extends ESNode = any> {
       return
     }
 
-    if (is.array(val)) {
+    if (isArray(val)) {
       removeNodes(val, this, prop, 0, Infinity)
     } else if (val.type === 'BlockStatement') {
       removeNodes(val.body, val, 'body', 0, Infinity)
@@ -324,10 +341,13 @@ export class NebuNode<T extends ESNode = any> {
     }
   }
 
-  isLiteral(type?: string): this is Node.Literal {
-    return type == null
-      ? this.type == 'Literal'
-      : this.isLiteral() && type == is.what(this.value)
+  isLiteral(
+    type?: 'string' | 'number' | 'boolean' | 'null' | 'RegExp' | 'bigint'
+  ): this is Node.Literal {
+    return (
+      this.type === 'Literal' &&
+      (type == null || literalTypes[type]((this as any).value))
+    )
   }
   isDeclarationStatement(): this is Node.DeclarationStatement {
     return Node.isDeclarationStatement(this)

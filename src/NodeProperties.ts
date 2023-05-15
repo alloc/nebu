@@ -1,4 +1,4 @@
-import { is } from '@alloc/is'
+import { isArray } from '@alloc/is'
 import { AllNodeProps } from './types'
 import { replacers } from './replacers'
 import { Node } from './Node'
@@ -11,7 +11,7 @@ export const NodeProperties = new Proxy(Object.prototype, {
         val = new Node(val, node, key)
         return replaceProp(node, key, val)
       }
-      if (is.array(val)) {
+      if (isArray(val)) {
         val = val.map(val => {
           return val && val.type //
             ? new Node(val, node, key)

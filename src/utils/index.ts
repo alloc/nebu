@@ -1,4 +1,4 @@
-import { is } from '@alloc/is'
+import { isArray } from '@alloc/is'
 import {
   ArrayProp,
   ESTree,
@@ -139,7 +139,7 @@ export function getArray(node: Node, prop: string): readonly any[]
 export function getArray(node: Node, prop: string) {
   const val = Reflect.get(node, prop)
   if (val) {
-    if (is.array(val)) {
+    if (isArray(val)) {
       return val
     }
     if (val.type == 'BlockStatement') {

@@ -17,7 +17,6 @@
     "utils.d.ts"
   ],
   "dependencies": {
-    "@alloc/is": "^3.0.0",
     "@alloc/types": "^2.0.0",
     "eslint-visitor-keys": "^3.3.0",
     "magic-string": "~0.24.0",
@@ -25,6 +24,7 @@
   },
   "devDependencies": {
     "@alloc/fast-rimraf": "^1.0.8",
+    "@alloc/is": "^3.1.2",
     "@alloc/prettier-config": "^1.0.0",
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/jest": "^26.0.21",
