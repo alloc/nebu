@@ -34,7 +34,7 @@ export type CompositeNode<T> = T extends ESTree.Node
 export interface NodeConstructor extends StaticTypeGuards {
   new <T extends ESNode>(node: T, parent?: Node, ref?: string): Node<T>
 
-  isNode(arg: any): arg is Node
+  isNode(arg: any): arg is AnyNode
   isDeclarationStatement(arg: any): arg is Node.DeclarationStatement
   isExportDeclaration(arg: any): arg is Node.ExportDeclaration
   isExpression(arg: any): arg is Node.Expression
