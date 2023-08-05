@@ -8,7 +8,7 @@
   "prettier": "@alloc/prettier-config",
   "scripts": {
     "dev": "tsc -p . --watch --sourceMap --declarationMap",
-    "build": "rimraf dist && node scripts/extractTypeGuards && tsup src/nebu.ts --dts --format cjs",
+    "build": "rimraf dist && node scripts/extractTypeGuards && tsup src/nebu.ts src/utils/index.ts --dts --format cjs",
     "prepare": "yarn build"
   },
   "files": [
