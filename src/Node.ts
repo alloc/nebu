@@ -41,7 +41,7 @@ import {
 } from './utils'
 import { Walker } from './Walker'
 import { MagicSlice, toRelativeIndex } from './MagicSlice'
-import { NodeProperties } from './NodeProperties'
+import { getNodeProperties } from './NodeProperties'
 import { getContext, popContext, pushContext } from './context'
 import { greedyRange } from './utils/greedyRange'
 
@@ -429,7 +429,7 @@ Object.assign(Node.prototype, {
 })
 
 // Forward all other properties to the ESTree node.
-Object.setPrototypeOf(Node.prototype, NodeProperties)
+Object.setPrototypeOf(Node.prototype, getNodeProperties())
 
 for (const type in KEYS) {
   // Add type guards
