@@ -8,7 +8,7 @@
   "prettier": "@alloc/prettier-config",
   "scripts": {
     "dev": "tsc -p . --watch --sourceMap --declarationMap",
-    "build": "rimraf dist && node scripts/extractTypeGuards && tsc -p .",
+    "build": "rimraf dist && node scripts/extractTypeGuards && esbuild src/*.ts src/**/*.ts --bundle --splitting --format=esm --platform=node --main-fields=module,main --external:eslint-visitor-keys --external:magic-string --external:meriyah --outdir=dist && esbuild dist/*.js dist/**/*.js --format=cjs --platform=node --outdir=dist --allow-overwrite && tsc -p . --emitDeclarationOnly",
     "prepare": "yarn build"
   },
   "files": [
@@ -29,6 +29,7 @@
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/node": "^14.14.35",
     "endent": "^2.1.0",
+    "esbuild": "^0.20.1",
     "prettier": "^2.2.1",
     "typescript": "^5.3.3",
     "vitest": "^0.31.0"
