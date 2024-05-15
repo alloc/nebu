@@ -2,14 +2,29 @@
   "name": "nebu",
   "version": "2.4.5",
   "main": "dist/nebu.js",
+  "exports": {
+    ".": {
+      "browser": "./dist/browser/nebu.mjs",
+      "require": "./dist/nebu.js",
+      "types": "./dist/nebu.d.ts"
+    },
+    "./utils": {
+      "browser": "./dist/browser/utils/index.mjs",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    }
+  },
   "license": "MIT",
   "description": "Fast, extensible, and light Javascript transformer",
   "repository": "https://github.com/aleclarson/nebu.git",
   "prettier": "@alloc/prettier-config",
   "scripts": {
     "dev": "tsc -p . --watch --sourceMap --declarationMap",
-    "build": "rimraf dist && node scripts/extractTypeGuards && esbuild src/*.ts src/**/*.ts --bundle --splitting --format=esm --platform=node --main-fields=module,main --external:eslint-visitor-keys --external:magic-string --external:meriyah --outdir=dist && esbuild dist/*.js dist/**/*.js --format=cjs --platform=node --outdir=dist --allow-overwrite && tsc -p . --emitDeclarationOnly",
-    "prepare": "yarn build"
+    "build": "rimraf dist && node scripts/extractTypeGuards && concurrently -n node,browser,types 'pnpm run -s build:node' 'pnpm run -s build:browser' 'pnpm run -s build:types'",
+    "build:node": "esbuild src/*.ts src/**/*.ts --bundle --splitting --format=esm --platform=node --main-fields=module,main --external:eslint-visitor-keys --external:magic-string --external:meriyah --outdir=dist && esbuild dist/*.js dist/**/*.js --format=cjs --platform=node --outdir=dist --allow-overwrite",
+    "build:types": "tsc -p . --emitDeclarationOnly",
+    "build:browser": "tsup",
+    "prepare": "pnpm run -s build"
   },
   "files": [
     "dist",
@@ -28,13 +43,24 @@
     "@alloc/prettier-config": "^1.0.0",
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/node": "^14.14.35",
+    "@types/resolve": "^1.20.6",
+    "concurrently": "^8.2.2",
     "endent": "^2.1.0",
     "esbuild": "^0.20.1",
+    "esbuild-plugin-alias": "^0.2.1",
+    "path-browserify": "^1.0.1",
     "prettier": "^2.2.1",
+    "resolve": "^1.22.8",
+    "tsup": "^8.0.2",
     "typescript": "^5.3.3",
     "vitest": "^0.31.0"
   },
   "engines": {
     "node": ">= 7.6.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "$esbuild"
+    }
   }
 }
