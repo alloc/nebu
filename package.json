@@ -5,13 +5,13 @@
   "exports": {
     ".": {
       "browser": "./dist/browser/nebu.mjs",
-      "require": "./dist/nebu.js",
-      "types": "./dist/nebu.d.ts"
+      "types": "./dist/nebu.d.ts",
+      "default": "./dist/nebu.js"
     },
     "./utils": {
       "browser": "./dist/browser/utils/index.mjs",
-      "require": "./dist/utils/index.js",
-      "types": "./dist/utils/index.d.ts"
+      "types": "./dist/utils/index.d.ts",
+      "default": "./dist/utils/index.js"
     }
   },
   "license": "MIT",
